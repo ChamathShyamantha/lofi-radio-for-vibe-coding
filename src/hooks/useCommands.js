@@ -1,4 +1,4 @@
-export function useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI }) {
+export function useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI, setShowJournal }) {
   const { togglePlay, nextStation, prevStation, setVolume, setStation } = radioState;
   const { setLoopVolume } = ambientState || {};
   const { startTimer, stopTimer } = timerState || {};
@@ -81,8 +81,8 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
         }
         return 'Usage: volume <0-100>';
       case 'journal':
-        if (setStickyNotes) { // Hack: passed as 6th param in App.jsx
-          setStickyNotes('journal');
+        if (setShowJournal) {
+          setShowJournal(true);
           return 'Opening distraction-free journal...';
         }
         return 'Journal not ready';

@@ -21,7 +21,7 @@ import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
 
 export const ydoc = new Y.Doc();
-export const provider = new WebrtcProvider('drift-fm-global-room', ydoc, { signaling: ['wss://signaling.yjs.dev'] });
+export const provider = new WebrtcProvider('drift-fm-global-room', ydoc);
 import { useState, useEffect } from 'react';
 
 function App() {
@@ -54,19 +54,18 @@ function App() {
     return () => clearInterval(interval);
   }, [themeState, radioState]);
 
-  const commandState = useCommands(
-    radioState,
-    themeState.setTheme,
-    ambientState.setLoopVolume,
-    timerState.setTimer,
-    () => setShowNotes(prev => !prev),
-    (cmd) => {
-      if (cmd === 'journal') setShowJournal(true);
-    }
-  );
-
   const [showSticky, setShowSticky] = useState(() => localStorage.getItem('drift_sticky') === 'true');
   const [showTimerUI, setShowTimerUI] = useState(() => localStorage.getItem('drift_timer_ui') === 'true');
+
+  const commandState = useCommands({
+    radioState,
+    ambientState,
+    timerState,
+    themeState,
+    setShowSticky,
+    setShowTimerUI,
+    setShowJournal
+  });
 
   useEffect(() => { localStorage.setItem('drift_sticky', showSticky); }, [showSticky]);
   useEffect(() => { localStorage.setItem('drift_timer_ui', showTimerUI); }, [showTimerUI]);

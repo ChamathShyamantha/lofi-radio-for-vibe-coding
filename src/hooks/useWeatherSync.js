@@ -21,7 +21,7 @@ export function useWeatherSync(ambientState, themeState) {
         const isRaining = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(code);
         
         if (isRaining && ambientState.setLoopVolume) {
-          ambientState.setLoopVolume('rain', 50);
+          ambientState.setLoopVolume('rain', 50, false);
         }
         
         const hour = new Date().getHours();

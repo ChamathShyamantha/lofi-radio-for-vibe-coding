@@ -87,8 +87,8 @@ export function useToneAmbient() {
     });
   };
 
-  const setLoopVolume = async (id, val) => {
-    if (!isStarted.current) {
+  const setLoopVolume = async (id, val, initAudio = true) => {
+    if (initAudio && !isStarted.current) {
       await Tone.start();
       isStarted.current = true;
       await initSynths();
@@ -96,7 +96,7 @@ export function useToneAmbient() {
     
     setVolumes(prev => ({ ...prev, [id]: val }));
     
-    if (synthsRef.current[id]) {
+    if (isStarted.current && synthsRef.current[id]) {
       const db = val === 0 ? -Infinity : Tone.gainToDb(val / 100);
       synthsRef.current[id].volume.rampTo(db, 0.5);
       
