@@ -50,7 +50,7 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
   }, [getAudioData, isPlaying]);
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-20 pointer-events-auto bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl min-w-[320px]">
+    <div className="flex flex-col items-center gap-4 bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl min-w-[320px]">
       
       <div className="flex flex-col gap-1 w-full items-center">
         <div className="flex items-center gap-3">
@@ -64,24 +64,37 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
       </div>
 
       <div className="flex items-center gap-6 mt-2">
-        <button onClick={prevStation} className="text-haze hover:text-lamp transition-colors">
+        <button 
+          onClick={prevStation} 
+          onPointerDown={(e) => e.stopPropagation()} 
+          className="text-haze hover:text-lamp transition-colors"
+        >
           <SkipBack size={20} />
         </button>
         
         <button 
           onClick={togglePlay}
+          onPointerDown={(e) => e.stopPropagation()}
           className="w-12 h-12 rounded-full bg-lamp text-ink flex items-center justify-center hover:scale-105 transition-transform shadow-[0_0_15px_rgba(255,180,84,0.3)]"
         >
           {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
         </button>
 
-        <button onClick={nextStation} className="text-haze hover:text-lamp transition-colors">
+        <button 
+          onClick={nextStation} 
+          onPointerDown={(e) => e.stopPropagation()} 
+          className="text-haze hover:text-lamp transition-colors"
+        >
           <SkipForward size={20} />
         </button>
       </div>
 
       <div className="flex items-center gap-2 w-full mt-2 px-4">
-        <button onClick={() => setVolume(volume === 0 ? 0.5 : 0)} className="text-haze hover:text-lamp">
+        <button 
+          onClick={() => setVolume(volume === 0 ? 0.5 : 0)} 
+          onPointerDown={(e) => e.stopPropagation()} 
+          className="text-haze hover:text-lamp"
+        >
           {volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
         <input
@@ -91,6 +104,7 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
           step="0.05"
           value={volume}
           onChange={(e) => setVolume(parseFloat(e.target.value))}
+          onPointerDown={(e) => e.stopPropagation()}
           className="w-full h-1 bg-haze/20 rounded-lg appearance-none cursor-pointer accent-lamp"
         />
       </div>

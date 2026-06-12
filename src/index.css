@@ -1,21 +1,92 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #0B0E14;
-  --color-dusk: #1A1F2E;
-  --color-lamp: #FFB454;
-  --color-ember: #E8606B;
-  --color-phosphor: #9FE88D;
-  --color-haze: #8B93A7;
+  --color-ink: var(--theme-ink);
+  --color-dusk: var(--theme-dusk);
+  --color-lamp: var(--theme-lamp);
+  --color-ember: var(--theme-ember);
+  --color-phosphor: var(--theme-phosphor);
+  --color-haze: var(--theme-haze);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
   --font-serif: 'DM Serif Display', 'Instrument Serif', serif;
+
+  --animate-lamp-pulse: lamp-pulse 8s ease-in-out infinite;
+  --animate-monitor-drift: monitor-drift 15s linear infinite;
+
+  @keyframes lamp-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.15; }
+    50% { transform: scale(1.05); opacity: 0.18; }
+  }
+  
+  @keyframes monitor-drift {
+    0% { transform: translate(0px, 0px); }
+    33% { transform: translate(30px, -20px); }
+    66% { transform: translate(-20px, 30px); }
+    100% { transform: translate(0px, 0px); }
+  }
 }
 
 :root {
-  background-color: var(--color-ink);
-  color: var(--color-haze);
+  /* Default Lamplight */
+  --theme-ink: #0B0E14;
+  --theme-dusk: #1A1F2E;
+  --theme-lamp: #FFB454;
+  --theme-ember: #E8606B;
+  --theme-phosphor: #9FE88D;
+  --theme-haze: #8B93A7;
+}
+
+.theme-lamplight {
+  /* same as root */
+}
+
+.theme-vaporwave {
+  --theme-ink: #10002b;
+  --theme-dusk: #240046;
+  --theme-lamp: #e0aaff;
+  --theme-ember: #ff006e;
+  --theme-phosphor: #00f5d4;
+  --theme-haze: #c77dff;
+}
+
+.theme-matrix {
+  --theme-ink: #010a01;
+  --theme-dusk: #041f04;
+  --theme-lamp: #39ff14;
+  --theme-ember: #00ff00;
+  --theme-phosphor: #39ff14;
+  --theme-haze: #00ff00;
+}
+
+.theme-dawn {
+  --theme-ink: #f8edeb;
+  --theme-dusk: #fcd5ce;
+  --theme-lamp: #f08080;
+  --theme-ember: #e5989b;
+  --theme-phosphor: #f4a261;
+  --theme-haze: #b5838d;
+}
+
+.crt-overlay {
+  pointer-events: none;
+  z-index: 50;
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+    linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.04));
+  background-size: 100% 4px, 3px 100%;
+}
+
+.crt-vignette {
+  pointer-events: none;
+  z-index: 49;
+  box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
+}
+
+:root {
+  background-color: var(--theme-ink);
+  color: var(--theme-haze);
   overflow: hidden; /* For zero-g app */
 }
 

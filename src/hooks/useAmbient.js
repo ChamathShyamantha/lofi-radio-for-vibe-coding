@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Howl } from 'howler';
 import { AMBIENT_LOOPS } from '../data/ambientLoops';
 

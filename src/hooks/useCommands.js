@@ -1,7 +1,8 @@
-export function useCommands({ radioState, ambientState, timerState }) {
+export function useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI }) {
   const { togglePlay, nextStation, prevStation, setVolume, setStation } = radioState;
   const { setLoopVolume } = ambientState || {};
   const { startTimer, stopTimer } = timerState || {};
+  const { setTheme } = themeState || {};
 
   const parseCommand = (cmdStr) => {
     const args = cmdStr.trim().toLowerCase().split(' ');
@@ -23,18 +24,39 @@ export function useCommands({ radioState, ambientState, timerState }) {
           return setStation(args[1]);
         }
         return 'Usage: station <name>';
+      case 'theme':
+        if (setTheme) {
+          const validThemes = ['lamplight', 'vaporwave', 'matrix', 'dawn'];
+          if (validThemes.includes(args[1])) {
+            setTheme(args[1]);
+            return `Theme switched to ${args[1]}`;
+          }
+          return `Usage: theme <lamplight|vaporwave|matrix|dawn>`;
+        }
+        return 'Theme system not ready';
+      case 'sticky':
+        if (setShowSticky) {
+          setShowSticky(prev => !prev);
+          return 'Toggled sticky notes.';
+        }
+        return 'Sticky notes not ready';
       case 'timer':
-        if (startTimer) {
+        if (startTimer && setShowTimerUI) {
           if (args[1] === 'stop' || args[1] === 'clear') {
             stopTimer();
             return 'Timer stopped.';
           }
+          if (args[1] === 'ui') {
+            setShowTimerUI(prev => !prev);
+            return 'Toggled timer UI.';
+          }
           const val = parseInt(args[1], 10);
           if (!isNaN(val) && val > 0) {
             startTimer(val);
+            setShowTimerUI(true);
             return `Timer set for ${val} minutes.`;
           }
-          return 'Usage: timer <minutes> | stop';
+          return 'Usage: timer <minutes> | stop | ui';
         }
         return 'Timer not ready';
       case 'rain':
