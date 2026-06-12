@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0B0E14;
+  --color-dusk: #1A1F2E;
+  --color-lamp: #FFB454;
+  --color-ember: #E8606B;
+  --color-phosphor: #9FE88D;
+  --color-haze: #8B93A7;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+  --font-serif: 'DM Serif Display', 'Instrument Serif', serif;
+}
+
+:root {
+  background-color: var(--color-ink);
+  color: var(--color-haze);
+  overflow: hidden; /* For zero-g app */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  overscroll-behavior: none;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
