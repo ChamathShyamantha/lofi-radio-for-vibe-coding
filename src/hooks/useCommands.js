@@ -1,5 +1,6 @@
-export function useCommands({ radioState }) {
+export function useCommands({ radioState, ambientState }) {
   const { togglePlay, nextStation, prevStation, setVolume, setStation } = radioState;
+  const { setLoopVolume } = ambientState || {};
 
   const parseCommand = (cmdStr) => {
     const args = cmdStr.trim().toLowerCase().split(' ');
@@ -21,6 +22,19 @@ export function useCommands({ radioState }) {
           return setStation(args[1]);
         }
         return 'Usage: station <name>';
+      case 'rain':
+      case 'crackle':
+      case 'fire':
+      case 'cafe':
+        if (setLoopVolume) {
+          if (args[1]) {
+            const val = Math.min(100, Math.max(0, parseInt(args[1], 10)));
+            setLoopVolume(cmd, val / 100);
+            return `${cmd} volume set to ${val}%`;
+          }
+          return `Usage: ${cmd} <0-100>`;
+        }
+        return 'Ambient mixer not ready';
       case 'vol':
       case 'volume':
         if (args[1]) {
@@ -30,7 +44,7 @@ export function useCommands({ radioState }) {
         }
         return 'Usage: volume <0-100>';
       case 'help':
-        return 'Commands: play, pause, next, prev, station <name>, volume <0-100>';
+        return 'Commands: play, pause, next, prev, station <name>, volume <0-100>, rain, crackle, fire, cafe <0-100>';
       case '':
         return '';
       default:

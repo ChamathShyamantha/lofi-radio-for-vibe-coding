@@ -6,12 +6,14 @@ import AmbientMixer from './components/AmbientMixer';
 import { useRadio } from './hooks/useRadio';
 import { useCommands } from './hooks/useCommands';
 import { useAmbient } from './hooks/useAmbient';
+import { useShortcuts } from './hooks/useShortcuts';
 
 function App() {
   const radioState = useRadio();
   const ambientState = useAmbient();
   // Pass both to commands so terminal can control them
   const { parseCommand } = useCommands({ radioState, ambientState });
+  useShortcuts({ radioState });
 
   return (
     <div className="relative w-full h-screen bg-ink text-haze font-sans overflow-hidden">
