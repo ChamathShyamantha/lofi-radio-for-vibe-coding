@@ -3,10 +3,16 @@ import { Howl } from 'howler';
 import { AMBIENT_LOOPS } from '../data/ambientLoops';
 
 export function useAmbient() {
-  const [volumes, setVolumes] = useState(
-    AMBIENT_LOOPS.reduce((acc, loop) => ({ ...acc, [loop.id]: 0 }), {})
-  );
+  const [volumes, setVolumes] = useState(() => {
+    try {
+      const saved = localStorage.getItem('drift_ambient');
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return AMBIENT_LOOPS.reduce((acc, loop) => ({ ...acc, [loop.id]: 0 }), {});
+  });
   const howlsRef = useRef({});
+
+  useEffect(() => { localStorage.setItem('drift_ambient', JSON.stringify(volumes)); }, [volumes]);
 
   const setLoopVolume = (id, vol) => {
     setVolumes(prev => ({ ...prev, [id]: vol }));

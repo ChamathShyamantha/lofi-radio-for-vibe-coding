@@ -51,6 +51,14 @@ export function useMatter(containerRef, getAudioData) {
     render.mouse = mouse;
 
     const spawnItem = (x, y) => {
+      // Limit bodies to ~25
+      const allBodies = Composite.allBodies(engine.world);
+      const dynamicBodies = allBodies.filter(b => !b.isStatic && b.label !== 'Mouse Constraint');
+      if (dynamicBodies.length >= 25) {
+        // Remove oldest dynamic body
+        World.remove(engine.world, dynamicBodies[0]);
+      }
+
       const itemDef = PHYSICS_ITEMS[Math.floor(Math.random() * PHYSICS_ITEMS.length)];
       const body = Bodies.rectangle(x, y, itemDef.width, itemDef.height, {
         frictionAir: 0.02,
@@ -61,6 +69,9 @@ export function useMatter(containerRef, getAudioData) {
       Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05);
       World.add(engine.world, body);
     };
+
+    // Store spawn on engine for external access
+    engine.spawnItem = spawnItem;
 
     for (let i = 0; i < 8; i++) {
       spawnItem(width * 0.2 + Math.random() * width * 0.6, height * 0.2 + Math.random() * height * 0.6);
@@ -115,8 +126,18 @@ export function useMatter(containerRef, getAudioData) {
     };
     window.addEventListener('resize', handleResize);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        Runner.stop(runner);
+      } else {
+        Runner.run(runner, engine);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
       Render.stop(render);
       Runner.stop(runner);
       World.clear(engine.world);

@@ -1,6 +1,7 @@
-export function useCommands({ radioState, ambientState }) {
+export function useCommands({ radioState, ambientState, timerState }) {
   const { togglePlay, nextStation, prevStation, setVolume, setStation } = radioState;
   const { setLoopVolume } = ambientState || {};
+  const { startTimer, stopTimer } = timerState || {};
 
   const parseCommand = (cmdStr) => {
     const args = cmdStr.trim().toLowerCase().split(' ');
@@ -22,6 +23,20 @@ export function useCommands({ radioState, ambientState }) {
           return setStation(args[1]);
         }
         return 'Usage: station <name>';
+      case 'timer':
+        if (startTimer) {
+          if (args[1] === 'stop' || args[1] === 'clear') {
+            stopTimer();
+            return 'Timer stopped.';
+          }
+          const val = parseInt(args[1], 10);
+          if (!isNaN(val) && val > 0) {
+            startTimer(val);
+            return `Timer set for ${val} minutes.`;
+          }
+          return 'Usage: timer <minutes> | stop';
+        }
+        return 'Timer not ready';
       case 'rain':
       case 'crackle':
       case 'fire':

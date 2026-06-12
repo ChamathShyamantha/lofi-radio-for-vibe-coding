@@ -37,12 +37,19 @@ function playStaticNoise(durationMs = 300) {
 
 export function useRadio() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentStationIndex, setCurrentStationIndex] = useState(0);
-  const [volume, setVolume] = useState(0.5);
+  const [currentStationIndex, setCurrentStationIndex] = useState(() => {
+    return parseInt(localStorage.getItem('drift_station') || '0', 10);
+  });
+  const [volume, setVolume] = useState(() => {
+    return parseFloat(localStorage.getItem('drift_volume') || '0.5');
+  });
   const howlRef = useRef(null);
   const isTransitioning = useRef(false);
   const analyserRef = useRef(null);
   const dataArrayRef = useRef(null);
+
+  useEffect(() => { localStorage.setItem('drift_station', currentStationIndex); }, [currentStationIndex]);
+  useEffect(() => { localStorage.setItem('drift_volume', volume); }, [volume]);
 
   const station = STATIONS[currentStationIndex];
 
