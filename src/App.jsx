@@ -35,7 +35,7 @@ function App() {
   return (
     <div className="relative w-full h-screen bg-ink text-haze font-sans overflow-hidden">
       {/* CRT Effects */}
-      <div className="absolute inset-0 crt-overlay mix-blend-overlay"></div>
+      <div className="absolute inset-0 crt-overlay opacity-40 pointer-events-none"></div>
       <div className="absolute inset-0 crt-vignette"></div>
 
       <AtmosphereLayer />

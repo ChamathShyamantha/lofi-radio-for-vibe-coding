@@ -23,9 +23,7 @@ export function useAmbient() {
         src: [loopDef.url],
         loop: true,
         volume: vol,
-        html5: true,
-        // Optional: gracefully ignore errors since files are missing
-        onloaderror: () => console.log(`Missing loop asset: ${loopDef.url}`)
+        onloaderror: (id, msg) => console.log(`Audio loop error: ${loopDef.url}`, msg)
       });
       howlsRef.current[id].play();
     } else if (howlsRef.current[id]) {

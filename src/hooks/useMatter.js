@@ -11,7 +11,10 @@ export function useMatter(containerRef, getAudioData) {
 
     const { Engine, Render, Runner, MouseConstraint, Mouse, World, Bodies, Body, Composite, Events } = Matter;
 
-    const engine = Engine.create({ gravity: { x: 0, y: 0, scale: 0 } });
+    const engine = Engine.create({
+      enableSleeping: false,
+      gravity: { x: 0, y: 0, scale: 0 }
+    });
     engineRef.current = engine;
 
     const width = window.innerWidth;
@@ -33,7 +36,7 @@ export function useMatter(containerRef, getAudioData) {
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 0.9 };
+    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 1.0, friction: 0 };
     const thickness = 60;
     World.add(engine.world, [
       Bodies.rectangle(width / 2, -thickness / 2, width, thickness, wallOptions),
@@ -61,11 +64,11 @@ export function useMatter(containerRef, getAudioData) {
 
       const itemDef = PHYSICS_ITEMS[Math.floor(Math.random() * PHYSICS_ITEMS.length)];
       const body = Bodies.rectangle(x, y, itemDef.width, itemDef.height, {
-        frictionAir: 0.02,
-        restitution: 0.9,
+        frictionAir: 0,
+        restitution: 1.0,
         render: { sprite: { texture: itemDef.texture } }
       });
-      Body.setVelocity(body, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
+      Body.setVelocity(body, { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 });
       Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05);
       World.add(engine.world, body);
     };
