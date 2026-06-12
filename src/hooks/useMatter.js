@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
-import { PHYSICS_ITEMS } from '../data/physicsItems';
+import { PHYSICS_ITEMS, petSvg, foodSvg, makeSvgUri } from '../data/physicsItems';
 
 export function useMatter(containerRef, getAudioData) {
   const engineRef = useRef(null);
@@ -76,6 +76,27 @@ export function useMatter(containerRef, getAudioData) {
     // Store spawn on engine for external access
     engine.spawnItem = spawnItem;
 
+    // Interactive Pet
+    const pet = Bodies.rectangle(width / 2, height - 100, 50, 50, {
+      restitution: 0.5,
+      frictionAir: 0.05,
+      friction: 0.2,
+      render: { sprite: { texture: makeSvgUri(petSvg) } },
+      label: 'pet'
+    });
+    World.add(engine.world, pet);
+
+    const feedPet = () => {
+      const food = Bodies.circle(pet.position.x, -20, 10, {
+        restitution: 0.8,
+        frictionAir: 0,
+        render: { sprite: { texture: makeSvgUri(foodSvg) } }
+      });
+      World.add(engine.world, food);
+    };
+
+    window.driftFM = { spawnItem, feedPet };
+
     for (let i = 0; i < 8; i++) {
       spawnItem(width * 0.2 + Math.random() * width * 0.6, height * 0.2 + Math.random() * height * 0.6);
     }
@@ -103,6 +124,11 @@ export function useMatter(containerRef, getAudioData) {
             }
           }
         }
+      }
+
+      // Pet animation logic
+      if (Math.random() < 0.01) {
+        Body.applyForce(pet, pet.position, { x: (Math.random() - 0.5) * 0.01, y: -0.05 });
       }
 
       if (mouseConstraint.body) return;

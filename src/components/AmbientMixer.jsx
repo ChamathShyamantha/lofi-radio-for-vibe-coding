@@ -1,11 +1,11 @@
 import { AMBIENT_LOOPS } from '../data/ambientLoops';
-import { CloudRain, Disc, Flame, Coffee } from 'lucide-react';
+import { CloudRain, Disc, Flame, Music } from 'lucide-react';
 
 const ICONS = {
   rain: <CloudRain size={16} />,
   crackle: <Disc size={16} />,
   fire: <Flame size={16} />,
-  cafe: <Coffee size={16} />
+  synth: <Music size={16} />
 };
 
 export default function AmbientMixer({ ambientState }) {

@@ -60,14 +60,14 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
         }
         return 'Timer not ready';
       case 'rain':
-      case 'crackle':
       case 'fire':
-      case 'cafe':
+      case 'crackle':
+      case 'synth':
         if (setLoopVolume) {
-          if (args[1]) {
-            const val = Math.min(100, Math.max(0, parseInt(args[1], 10)));
-            setLoopVolume(cmd, val / 100);
-            return `${cmd} volume set to ${val}%`;
+          const vol = parseInt(args[1], 10);
+          if (!isNaN(vol)) {
+            setLoopVolume(cmd, vol);
+            return `${cmd} set to ${vol}%`;
           }
           return `Usage: ${cmd} <0-100>`;
         }
@@ -80,6 +80,24 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
           return `Volume set to ${val}%`;
         }
         return 'Usage: volume <0-100>';
+      case 'journal':
+        if (setStickyNotes) { // Hack: passed as 6th param in App.jsx
+          setStickyNotes('journal');
+          return 'Opening distraction-free journal...';
+        }
+        return 'Journal not ready';
+      case 'feed':
+        if (args[1] === 'pet' && window.driftFM?.feedPet) {
+          window.driftFM.feedPet();
+          return 'Feeding the vibe pet...';
+        }
+        return 'Usage: feed pet';
+      case 'alarm':
+        if (args[1]) {
+          localStorage.setItem('drift_alarm', args[1]);
+          return `Alarm set for ${args[1]}`;
+        }
+        return 'Usage: alarm HH:MM';
       case 'help':
         return 'Commands: play, pause, next, prev, station <name>, volume <0-100>, rain, crackle, fire, cafe <0-100>';
       case '':
