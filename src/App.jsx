@@ -158,7 +158,7 @@ function App() {
       </AnimatePresence>
       
       {/* Container for UI */}
-      <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-32 md:pb-40">
+      <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-16 md:pb-40">
         <h1 className="font-serif italic text-5xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight">VibeCode FM</h1>
         <p className="font-mono text-[10px] md:text-xs text-haze/60 mb-4 md:mb-8 pointer-events-none select-none text-center px-4">the ultimate environment for vibe coders</p>
         

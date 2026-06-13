@@ -51,7 +51,7 @@ export function useMatter(containerRef, getAudioData, isPlaying) {
     // to prevent any cursor-based interaction with bodies
     render.canvas.style.pointerEvents = 'none';
 
-    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 0.6, friction: 0 };
+    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 1.0, friction: 0 };
     const thickness = 60;
     World.add(engine.world, [
       Bodies.rectangle(width / 2, -thickness / 2, width, thickness, wallOptions),
@@ -61,22 +61,25 @@ export function useMatter(containerRef, getAudioData, isPlaying) {
     ]);
 
     const spawnItem = (x, y) => {
-      // Limit bodies to ~25
+      // Limit bodies to ~25 (8 on mobile)
+      const isMobile = window.innerWidth < 768;
+      const maxBodies = isMobile ? 8 : 35;
       const allBodies = Composite.allBodies(engine.world);
       const dynamicBodies = allBodies.filter(b => !b.isStatic && b.label !== 'Mouse Constraint' && b.label !== 'pet');
-      if (dynamicBodies.length >= 35) {
-        // Remove oldest dynamic body
+      
+      if (dynamicBodies.length >= maxBodies) {
         World.remove(engine.world, dynamicBodies[0]);
       }
 
       const itemDef = PHYSICS_ITEMS[Math.floor(Math.random() * PHYSICS_ITEMS.length)];
       const body = Bodies.rectangle(x, y, itemDef.width, itemDef.height, {
-        frictionAir: 0.02,
-        restitution: 0.5,
+        frictionAir: 0.001, // Almost zero friction so they float forever
+        restitution: 1.0,   // Perfectly bouncy
+        friction: 0,
         render: { sprite: { texture: itemDef.texture } }
       });
-      Body.setVelocity(body, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
-      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
+      Body.setVelocity(body, { x: (Math.random() - 0.5) * 4, y: (Math.random() - 0.5) * 4 });
+      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.04);
       World.add(engine.world, body);
     };
 
@@ -120,7 +123,8 @@ export function useMatter(containerRef, getAudioData, isPlaying) {
 
     window.driftFM = { spawnItem, feedPet };
 
-    for (let i = 0; i < 25; i++) {
+    const initialItemCount = window.innerWidth < 768 ? 6 : 25;
+    for (let i = 0; i < initialItemCount; i++) {
       spawnItem(width * 0.05 + Math.random() * width * 0.9, height * 0.05 + Math.random() * height * 0.9);
     }
 
