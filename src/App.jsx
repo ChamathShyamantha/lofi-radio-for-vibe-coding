@@ -157,7 +157,8 @@ function App() {
       
       {/* Container for UI */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-40">
-        <h1 className="font-serif italic text-6xl text-lamp drop-shadow-lg mb-8 pointer-events-none select-none">Drift FM</h1>
+        <h1 className="font-serif italic text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none">Drift FM</h1>
+        <p className="font-mono text-xs text-haze/60 mb-8 pointer-events-none select-none">the ultimate environment for vibe coders</p>
         
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Terminal onCommand={parseCommand} />

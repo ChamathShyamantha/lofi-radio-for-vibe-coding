@@ -99,7 +99,30 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
         }
         return 'Usage: alarm HH:MM';
       case 'help':
-        return 'Commands: play, pause, next, prev, station <name>, volume <0-100>, rain, crackle, fire, cafe <0-100>';
+        return 'Commands: play, pause, next, prev, station <name>, theme <name>, volume <0-100>, rain, fire, timer <min>, sticky, journal, focus, relax, coffee, status';
+      case 'focus':
+        if (setTheme) setTheme('matrix');
+        if (setLoopVolume) setLoopVolume('synth', 30);
+        if (startTimer && setShowTimerUI) {
+          startTimer(25);
+          setShowTimerUI(true);
+        }
+        return 'Focus mode engaged. Timer started, matrix theme applied.';
+      case 'relax':
+        if (setTheme) setTheme('lamplight');
+        if (setLoopVolume) setLoopVolume('fire', 50);
+        if (startTimer) stopTimer();
+        return 'Relax mode engaged. Taking a breather...';
+      case 'coffee':
+        return 'Error 418: I am a teapot. But you should definitely go grab a coffee.';
+      case 'status':
+        return 'System ready. Vibe check: PASSED. Aesthetics: MAXIMUM.';
+      case 'matrix':
+        if (setTheme) {
+          setTheme('matrix');
+          return 'Wake up, Neo...';
+        }
+        return 'Theme system not ready';
       case '':
         return '';
       default:

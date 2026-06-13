@@ -1,13 +1,13 @@
 export const SNIPPETS = [
   "// TIP: Type 'play' to start the music.\nstartRadioStream();",
-  "// MANTRA: One task at a time.\nconst focus = true;",
+  "// VIBE CODING: One task at a time.\nconst focus = true;",
   "// TIP: Try 'timer 25' for a pomodoro session.\ninitTimer(25);",
-  "// TIP: Change the vibe with 'theme vaporwave'.\nsetTheme('vaporwave');",
-  "// MANTRA: Breathe in, breathe out.\nawait relax();",
-  "// TIP: You can drag the windows around!\nmakeDraggable();",
-  "// TIP: Type 'rain 50' to add some rain sounds.\nsetAmbient('rain', 50);",
+  "// VIBE CODING: Let the aesthetic guide the logic.\nsetTheme('vaporwave');",
+  "// TIP: Type 'rain 50' or 'fire 30' to set the mood.\nawait mixAmbientSounds();",
+  "// VIBE CODING: Less stressing, more vibing.\nrelaxAndCode();",
+  "// TIP: Type 'coffee' or 'matrix' for hidden commands.\nloadEasterEggs();",
   "// MANTRA: Progress, not perfection.\ncommitChanges();",
-  "// TIP: Explore themes: lamplight, vaporwave, matrix, dawn.\nloadThemes();"
+  "// TIP: Type 'journal' to open a distraction-free notepad.\nopenJournal();"
 ];
 
 export function highlightText(text) {
