@@ -6,6 +6,7 @@ import AmbientMixer from './components/AmbientMixer';
 import Toolbar from './components/Toolbar';
 import PomodoroUI from './components/PomodoroUI';
 import StickyNotes from './components/StickyNotes';
+import TodoList from './components/TodoList';
 import Journal from './components/Journal';
 import { useRadio } from './hooks/useRadio';
 import { useCommands } from './hooks/useCommands';
@@ -33,6 +34,7 @@ function App() {
   
   const [showNotes, setShowNotes] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
+  const [showTodo, setShowTodo] = useState(() => localStorage.getItem('drift_todo_ui') === 'true');
   
   useWeatherSync(ambientState, themeState);
   useMidi();
@@ -69,6 +71,7 @@ function App() {
 
   useEffect(() => { localStorage.setItem('drift_sticky', showSticky); }, [showSticky]);
   useEffect(() => { localStorage.setItem('drift_timer_ui', showTimerUI); }, [showTimerUI]);
+  useEffect(() => { localStorage.setItem('drift_todo_ui', showTodo); }, [showTodo]);
   
   const { parseCommand } = useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI });
   useShortcuts({ radioState });
@@ -113,13 +116,14 @@ function App() {
       ))}
 
       <AtmosphereLayer />
-      <PhysicsCanvas getAudioData={radioState.getAudioData} />
+      <PhysicsCanvas getAudioData={radioState.getAudioData} isPlaying={radioState.isPlaying} />
 
       <Toolbar 
         radioState={radioState} 
         themeState={themeState} 
         toggleSticky={() => setShowSticky(prev => !prev)} 
-        toggleTimer={() => setShowTimerUI(prev => !prev)} 
+        toggleTimer={() => setShowTimerUI(prev => !prev)}
+        toggleTodo={() => setShowTodo(prev => !prev)}
       />
       
       {/* Ambient Mixer Container */}
@@ -147,6 +151,12 @@ function App() {
       {showSticky && (
         <div className="absolute top-24 left-8 z-30 pointer-events-none">
           <StickyNotes onClose={() => setShowSticky(false)} />
+        </div>
+      )}
+
+      {showTodo && (
+        <div className="absolute top-24 left-80 z-30 pointer-events-none">
+          <TodoList onClose={() => setShowTodo(false)} />
         </div>
       )}
       

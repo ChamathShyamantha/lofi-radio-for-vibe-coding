@@ -1,9 +1,9 @@
 import { useRef, useEffect } from 'react';
 import { useMatter } from '../hooks/useMatter';
 
-export default function PhysicsCanvas({ getAudioData }) {
+export default function PhysicsCanvas({ getAudioData, isPlaying }) {
   const containerRef = useRef(null);
-  const { engine } = useMatter(containerRef, getAudioData);
+  const { engine } = useMatter(containerRef, getAudioData, isPlaying);
 
   useEffect(() => {
     const handleDrop = (e) => {
@@ -29,11 +29,9 @@ export default function PhysicsCanvas({ getAudioData }) {
   }, [engine]);
 
   const handleClick = (e) => {
-    // Avoid spawning if we're clicking an existing body
-    // The mouse constraint will handle dragging. We just spawn if clicking empty space.
-    if (engine && engine.spawnItem) {
-      // Just spawn at click location
-      engine.spawnItem(e.clientX, e.clientY);
+    // Apply a water drop ripple force to physics items
+    if (engine && engine.waterDrop) {
+      engine.waterDrop(e.clientX, e.clientY);
     }
   };
 

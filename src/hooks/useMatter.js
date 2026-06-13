@@ -2,14 +2,25 @@ import { useEffect, useRef } from 'react';
 import Matter from 'matter-js';
 import { PHYSICS_ITEMS, petSvg, foodSvg, makeSvgUri } from '../data/physicsItems';
 
-export function useMatter(containerRef, getAudioData) {
+export function useMatter(containerRef, getAudioData, isPlaying) {
   const engineRef = useRef(null);
   const frameRef = useRef(0);
+  const getAudioDataRef = useRef(getAudioData);
+  const isPlayingRef = useRef(isPlaying);
+
+  // Keep the refs up to date without triggering the effect
+  useEffect(() => {
+    getAudioDataRef.current = getAudioData;
+  }, [getAudioData]);
+
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const { Engine, Render, Runner, MouseConstraint, Mouse, World, Bodies, Body, Composite, Events } = Matter;
+    const { Engine, Render, Runner, World, Bodies, Body, Composite, Events } = Matter;
 
     const engine = Engine.create({
       enableSleeping: false,
@@ -36,7 +47,11 @@ export function useMatter(containerRef, getAudioData) {
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 1.0, friction: 0 };
+    // Disable Matter.js internal mouse events on the canvas
+    // to prevent any cursor-based interaction with bodies
+    render.canvas.style.pointerEvents = 'none';
+
+    const wallOptions = { isStatic: true, render: { visible: false }, restitution: 0.6, friction: 0 };
     const thickness = 60;
     World.add(engine.world, [
       Bodies.rectangle(width / 2, -thickness / 2, width, thickness, wallOptions),
@@ -45,36 +60,44 @@ export function useMatter(containerRef, getAudioData) {
       Bodies.rectangle(width + thickness / 2, height / 2, thickness, height, wallOptions)
     ]);
 
-    const mouse = Mouse.create(render.canvas);
-    const mouseConstraint = MouseConstraint.create(engine, {
-      mouse: mouse,
-      constraint: { stiffness: 0.1, render: { visible: false } }
-    });
-    World.add(engine.world, mouseConstraint);
-    render.mouse = mouse;
-
     const spawnItem = (x, y) => {
       // Limit bodies to ~25
       const allBodies = Composite.allBodies(engine.world);
-      const dynamicBodies = allBodies.filter(b => !b.isStatic && b.label !== 'Mouse Constraint');
-      if (dynamicBodies.length >= 25) {
+      const dynamicBodies = allBodies.filter(b => !b.isStatic && b.label !== 'Mouse Constraint' && b.label !== 'pet');
+      if (dynamicBodies.length >= 35) {
         // Remove oldest dynamic body
         World.remove(engine.world, dynamicBodies[0]);
       }
 
       const itemDef = PHYSICS_ITEMS[Math.floor(Math.random() * PHYSICS_ITEMS.length)];
       const body = Bodies.rectangle(x, y, itemDef.width, itemDef.height, {
-        frictionAir: 0,
-        restitution: 1.0,
+        frictionAir: 0.02,
+        restitution: 0.5,
         render: { sprite: { texture: itemDef.texture } }
       });
-      Body.setVelocity(body, { x: (Math.random() - 0.5) * 10, y: (Math.random() - 0.5) * 10 });
-      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.05);
+      Body.setVelocity(body, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
+      Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
       World.add(engine.world, body);
     };
 
     // Store spawn on engine for external access
     engine.spawnItem = spawnItem;
+
+    engine.waterDrop = (x, y) => {
+      const bodies = Composite.allBodies(engine.world);
+      for (const body of bodies) {
+        if (body.isStatic) continue;
+        const dx = body.position.x - x;
+        const dy = body.position.y - y;
+        const distSq = dx * dx + dy * dy;
+        
+        if (distSq > 0 && distSq < 90000) { // Limit ripple radius to 300px
+          const dist = Math.sqrt(distSq);
+          const forceMag = (0.04 * body.mass) / Math.max(dist / 100, 1);
+          Body.applyForce(body, body.position, { x: (dx / dist) * forceMag, y: (dy / dist) * forceMag });
+        }
+      }
+    };
 
     // Interactive Pet
     const pet = Bodies.rectangle(width / 2, height - 100, 50, 50, {
@@ -97,54 +120,34 @@ export function useMatter(containerRef, getAudioData) {
 
     window.driftFM = { spawnItem, feedPet };
 
-    for (let i = 0; i < 8; i++) {
-      spawnItem(width * 0.2 + Math.random() * width * 0.6, height * 0.2 + Math.random() * height * 0.6);
+    for (let i = 0; i < 25; i++) {
+      spawnItem(width * 0.05 + Math.random() * width * 0.9, height * 0.05 + Math.random() * height * 0.9);
     }
 
     Events.on(engine, 'beforeUpdate', () => {
       frameRef.current++;
       const bodies = Composite.allBodies(engine.world);
 
-      // Beat nudges
-      if (getAudioData && frameRef.current % 4 === 0) { // every 4th frame to save CPU
-        const audioData = getAudioData();
-        if (audioData) {
-          let bassEnergy = 0;
-          for (let i = 0; i < 4; i++) bassEnergy += audioData[i];
-          bassEnergy /= 4;
-          
-          if (bassEnergy > 230) {
-            for (const body of bodies) {
-              if (body.isStatic) continue;
-              const forceMag = 0.0003 * body.mass * (bassEnergy / 255);
-              Body.applyForce(body, body.position, {
-                x: (Math.random() - 0.5) * forceMag,
-                y: (Math.random() - 0.5) * forceMag
-              });
-            }
-          }
+      // Music-reactive drift — when music plays, items sway gently
+      if (isPlayingRef.current && frameRef.current % 30 === 0) {
+        for (const body of bodies) {
+          if (body.isStatic || body.label === 'pet') continue;
+          const forceMag = 0.0003 * body.mass;
+          Body.applyForce(body, body.position, {
+            x: (Math.random() - 0.5) * forceMag,
+            y: (Math.random() - 0.5) * forceMag
+          });
         }
       }
 
-      // Pet animation logic
-      if (Math.random() < 0.01) {
-        Body.applyForce(pet, pet.position, { x: (Math.random() - 0.5) * 0.01, y: -0.05 });
-      }
-
-      if (mouseConstraint.body) return;
-      const mousePos = mouse.position;
-      if (!mousePos.x || !mousePos.y) return;
-
-      for (const body of bodies) {
-        if (body.isStatic) continue;
-        const dx = body.position.x - mousePos.x;
-        const dy = body.position.y - mousePos.y;
-        const distSq = dx * dx + dy * dy;
-        
-        if (distSq < 14400 && distSq > 0) {
-          const dist = Math.sqrt(distSq);
-          const forceMag = 0.00015 * body.mass;
-          Body.applyForce(body, body.position, { x: (dx / dist) * forceMag, y: (dy / dist) * forceMag });
+      // Gentle random drift — nudge icons every ~90 frames so they float around slowly
+      if (!isPlayingRef.current && frameRef.current % 90 === 0) {
+        for (const body of bodies) {
+          if (body.isStatic || body.label === 'pet') continue;
+          Body.applyForce(body, body.position, {
+            x: (Math.random() - 0.5) * 0.0003 * body.mass,
+            y: (Math.random() - 0.5) * 0.0003 * body.mass
+          });
         }
       }
     });
@@ -174,8 +177,10 @@ export function useMatter(containerRef, getAudioData) {
       if (render.canvas) {
         render.canvas.remove();
       }
+      engineRef.current = null;
     };
-  }, [containerRef, getAudioData]);
+  }, [containerRef]);
 
   return { engine: engineRef.current };
 }
+

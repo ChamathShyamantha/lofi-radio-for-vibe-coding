@@ -1,6 +1,6 @@
-import { Palette, Timer, StickyNote, Play, Pause } from 'lucide-react';
+import { Palette, Timer, StickyNote, Play, Pause, ListTodo } from 'lucide-react';
 
-export default function Toolbar({ radioState, themeState, toggleSticky, toggleTimer }) {
+export default function Toolbar({ radioState, themeState, toggleSticky, toggleTimer, toggleTodo }) {
   const { isPlaying, togglePlay } = radioState;
   const { theme, setTheme } = themeState;
   const themes = ['lamplight', 'vaporwave', 'matrix', 'dawn'];
@@ -23,6 +23,9 @@ export default function Toolbar({ radioState, themeState, toggleSticky, toggleTi
       </button>
       <button onClick={toggleSticky} className="p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative" title="Sticky Notes">
         <StickyNote size={20} />
+      </button>
+      <button onClick={toggleTodo} className="p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative" title="To-Do List">
+        <ListTodo size={20} />
       </button>
     </div>
   );
