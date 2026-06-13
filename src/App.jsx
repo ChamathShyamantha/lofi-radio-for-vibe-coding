@@ -172,21 +172,21 @@ function App() {
       </div>
         
       {/* Terminal */}
-      <div className="absolute top-[45%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center w-[calc(100vw-80px)] md:w-auto">
+      <div className="absolute top-[42%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center w-[calc(100vw-80px)] md:w-auto">
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Terminal onCommand={parseCommand} />
         </motion.div>
       </div>
 
       {/* Player Container */}
-      <div className="absolute inset-x-0 bottom-16 md:bottom-8 z-20 pointer-events-none flex justify-center">
+      <div className="absolute inset-x-0 bottom-10 md:bottom-8 z-20 pointer-events-none flex justify-center">
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Player {...radioState} />
         </motion.div>
       </div>
 
       {/* Footer */}
-      <div className="absolute left-4 bottom-2 md:left-8 md:bottom-8 z-20 flex flex-col md:flex-col gap-1 pointer-events-auto scale-75 origin-bottom-left md:scale-100">
+      <div className="absolute inset-x-0 bottom-2 md:inset-x-auto md:left-8 md:bottom-8 z-20 flex flex-row md:flex-col justify-center md:justify-start items-center md:items-start gap-4 md:gap-1 pointer-events-auto scale-75 md:scale-100 origin-bottom md:origin-bottom-left">
         <span className="text-haze/30 text-[10px] md:text-xs font-mono">built by Dr.Psycho</span>
         <a 
           href="https://buymeacoffee.com/drpsycho" 
