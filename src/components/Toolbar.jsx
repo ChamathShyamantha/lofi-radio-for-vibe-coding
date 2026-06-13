@@ -29,7 +29,7 @@ export default function Toolbar({ radioState, themeState, toggleSticky, toggleTi
   };
 
   return (
-    <div className="fixed top-4 left-4 md:top-8 md:left-8 z-30 flex flex-row md:flex-col gap-2 md:gap-4 pointer-events-auto overflow-x-auto max-w-[calc(100vw-32px)] no-scrollbar">
+    <div className="fixed top-4 left-4 md:top-8 md:left-8 z-30 flex flex-col gap-2 md:gap-4 pointer-events-auto overflow-y-auto max-h-[calc(100vh-32px)] no-scrollbar">
       <button onClick={togglePlay} className="p-2 md:p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative flex-shrink-0" title="Play/Pause">
         {isPlaying ? <Pause size={20} /> : <Play size={20} />}
       </button>

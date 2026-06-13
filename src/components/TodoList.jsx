@@ -1,9 +1,11 @@
 import { motion, useDragControls } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, ListTodo, Trash2 } from 'lucide-react';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function TodoList({ onClose }) {
   const controls = useDragControls();
+  const isMobile = useIsMobile();
   const [tasks, setTasks] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('drift_todo_list') || '[]');
@@ -43,7 +45,7 @@ export default function TodoList({ onClose }) {
 
   return (
     <motion.div 
-      drag
+      drag={!isMobile}
       dragControls={controls}
       dragListener={false}
       dragMomentum={false}

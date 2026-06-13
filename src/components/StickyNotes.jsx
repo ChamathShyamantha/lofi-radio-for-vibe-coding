@@ -1,9 +1,11 @@
 import { motion, useDragControls } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, StickyNote } from 'lucide-react';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export default function StickyNotes({ onClose }) {
   const controls = useDragControls();
+  const isMobile = useIsMobile();
   const [notes, setNotes] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('drift_sticky_notes') || '[]');
@@ -32,7 +34,7 @@ export default function StickyNotes({ onClose }) {
 
   return (
     <motion.div 
-      drag
+      drag={!isMobile}
       dragControls={controls}
       dragListener={false}
       dragMomentum={false}

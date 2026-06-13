@@ -20,6 +20,7 @@ import { useMidi } from './hooks/useMidi';
 import { motion } from 'motion/react';
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
+import { useIsMobile } from './hooks/useIsMobile';
 
 export const ydoc = new Y.Doc();
 export const provider = new WebrtcProvider('drift-fm-global-room', ydoc);
@@ -31,6 +32,7 @@ function App() {
   const { timeString, greeting } = useClock();
   const timerState = useTimer();
   const themeState = useTheme();
+  const isMobile = useIsMobile();
   
   const [showNotes, setShowNotes] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
@@ -135,7 +137,7 @@ function App() {
       
       {/* Ambient Mixer Container */}
       <div className="absolute top-24 right-4 md:inset-y-0 md:right-8 z-20 pointer-events-none flex items-start md:items-center">
-        <motion.div drag dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
+        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <AmbientMixer ambientState={ambientState} />
         </motion.div>
       </div>
@@ -157,14 +159,14 @@ function App() {
       <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-40">
         <h1 className="font-serif italic text-6xl text-lamp drop-shadow-lg mb-8 pointer-events-none select-none">Drift FM</h1>
         
-        <motion.div drag dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
+        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Terminal onCommand={parseCommand} />
         </motion.div>
       </div>
 
       {/* Player Container */}
       <div className="absolute inset-x-0 bottom-8 z-20 pointer-events-none flex justify-center">
-        <motion.div drag dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
+        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Player {...radioState} />
         </motion.div>
       </div>
