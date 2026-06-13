@@ -15,10 +15,14 @@ export default function StickyNotes({ onClose }) {
   }, [notes]);
 
   const addNote = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!newNote.trim()) return;
     setNotes(prev => [...prev, { id: Date.now().toString(), text: newNote.trim(), color: COLORS[Math.floor(Math.random() * COLORS.length)] }]);
     setNewNote('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') addNote(e);
   };
 
   const removeNote = (id) => {
@@ -47,16 +51,17 @@ export default function StickyNotes({ onClose }) {
         {notes.length === 0 && <p className="text-xs text-haze/50 italic text-center py-4">No notes yet. Jot something down.</p>}
       </div>
 
-      <form onSubmit={addNote} onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
+      <div onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
         <input 
           type="text" 
           value={newNote} 
           onChange={e => setNewNote(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="New note..."
           className="flex-1 bg-transparent border-b border-haze/20 focus:border-lamp outline-none text-sm text-haze placeholder:text-haze/30 py-1"
         />
-        <button type="submit" className="text-haze hover:text-lamp transition-colors"><Plus size={18} /></button>
-      </form>
+        <button onClick={addNote} className="text-haze hover:text-lamp transition-colors"><Plus size={18} /></button>
+      </div>
     </motion.div>
   );
 }

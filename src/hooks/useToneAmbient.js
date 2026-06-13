@@ -78,7 +78,7 @@ export function useToneAmbient() {
     // Apply initial volumes
     Object.keys(volumes).forEach(id => {
       if (volumes[id] > 0) {
-        const db = Tone.gainToDb(volumes[id] / 100);
+        const db = Tone.gainToDb(volumes[id]);
         synthsRef.current[id].volume.value = db;
         if (synthsRef.current[id].start && synthsRef.current[id].state !== "started") {
           synthsRef.current[id].start();
@@ -97,7 +97,7 @@ export function useToneAmbient() {
     setVolumes(prev => ({ ...prev, [id]: val }));
     
     if (isStarted.current && synthsRef.current[id]) {
-      const db = val === 0 ? -Infinity : Tone.gainToDb(val / 100);
+      const db = val === 0 ? -Infinity : Tone.gainToDb(val);
       synthsRef.current[id].volume.rampTo(db, 0.5);
       
       if (val > 0 && synthsRef.current[id].start && synthsRef.current[id].state !== "started") {

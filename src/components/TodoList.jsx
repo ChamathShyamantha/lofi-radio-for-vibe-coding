@@ -15,10 +15,14 @@ export default function TodoList({ onClose }) {
   }, [tasks]);
 
   const addTask = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!newTask.trim()) return;
     setTasks(prev => [...prev, { id: Date.now().toString(), text: newTask.trim(), done: false }]);
     setNewTask('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') addTask(e);
   };
 
   const toggleTask = (id) => {
@@ -93,16 +97,17 @@ export default function TodoList({ onClose }) {
         )}
       </ul>
 
-      <form onSubmit={addTask} onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
+      <div onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
         <input 
           type="text" 
           value={newTask} 
           onChange={e => setNewTask(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder="Add a task..."
           className="flex-1 bg-transparent border-b border-haze/20 focus:border-lamp outline-none text-sm text-haze placeholder:text-haze/30 py-1"
         />
-        <button type="submit" className="text-haze hover:text-lamp transition-colors"><Plus size={18} /></button>
-      </form>
+        <button onClick={addTask} className="text-haze hover:text-lamp transition-colors"><Plus size={18} /></button>
+      </div>
     </motion.div>
   );
 }

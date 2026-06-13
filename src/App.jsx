@@ -177,14 +177,13 @@ function App() {
       </div>
 
       {/* Footer */}
-      <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center items-center gap-2 pointer-events-auto">
+      <div className="absolute left-8 bottom-8 z-20 flex flex-col gap-1 pointer-events-auto">
         <span className="text-haze/30 text-xs font-mono">built by Dr.Psycho</span>
-        <span className="text-haze/20">·</span>
         <a 
           href="https://buymeacoffee.com/drpsycho" 
           target="_blank" 
           rel="noopener noreferrer" 
-          className="flex items-center gap-1 text-xs font-mono text-lamp/40 hover:text-lamp transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-lamp/10 hover:bg-lamp/20 rounded-lg text-xs font-mono text-lamp transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
           buy me a coffee
