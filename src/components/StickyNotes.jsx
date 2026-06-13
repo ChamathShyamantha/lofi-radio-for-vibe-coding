@@ -34,6 +34,10 @@ export default function StickyNotes({ onClose }) {
 
   return (
     <motion.div 
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      transition={{ type: "spring", damping: 25, stiffness: 300 }}
       drag={!isMobile}
       dragControls={controls}
       dragListener={false}

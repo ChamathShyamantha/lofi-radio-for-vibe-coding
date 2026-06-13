@@ -17,7 +17,7 @@ import { useTimer } from './hooks/useTimer';
 import { useTheme } from './hooks/useTheme';
 import { useWeatherSync } from './hooks/useWeatherSync';
 import { useMidi } from './hooks/useMidi';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
 import { useIsMobile } from './hooks/useIsMobile';
@@ -151,9 +151,11 @@ function App() {
       </div>
 
       {/* Popout Windows */}
-      {showTimerUI && <PomodoroUI timerState={timerState} onClose={() => setShowTimerUI(false)} />}
-      {showSticky && <StickyNotes onClose={() => setShowSticky(false)} />}
-      {showTodo && <TodoList onClose={() => setShowTodo(false)} />}
+      <AnimatePresence>
+        {showTimerUI && <PomodoroUI timerState={timerState} onClose={() => setShowTimerUI(false)} key="timer" />}
+        {showSticky && <StickyNotes onClose={() => setShowSticky(false)} key="sticky" />}
+        {showTodo && <TodoList onClose={() => setShowTodo(false)} key="todo" />}
+      </AnimatePresence>
       
       {/* Container for UI */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-32 md:pb-40">
