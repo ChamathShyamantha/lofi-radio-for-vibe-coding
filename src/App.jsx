@@ -158,13 +158,15 @@ function App() {
       </AnimatePresence>
       
       {/* Container for UI */}
-      <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-16 md:pb-40">
-        <h1 className="font-serif italic text-6xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight text-center leading-[0.9] md:leading-normal">
-          VibeCode<span className="block md:inline mt-2 md:mt-0">FM</span>
-        </h1>
-        <p className="font-mono text-[10px] md:text-xs text-haze/60 mb-4 md:mb-8 pointer-events-none select-none text-center px-4">the ultimate environment for vibe coders</p>
+      <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-24 md:pb-40 pt-10 md:pt-0">
+        <div className="absolute top-20 md:relative md:top-auto flex flex-col items-center w-full px-12 md:px-0">
+          <h1 className="font-serif italic text-5xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight text-center leading-[0.9] md:leading-normal">
+            VibeCode<span className="block md:inline mt-1 md:mt-0"> FM</span>
+          </h1>
+          <p className="font-mono text-[10px] md:text-xs text-haze/60 mt-2 md:mb-8 pointer-events-none select-none text-center">the ultimate environment for vibe coders</p>
+        </div>
         
-        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
+        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing mt-24 md:mt-0">
           <Terminal onCommand={parseCommand} />
         </motion.div>
       </div>
