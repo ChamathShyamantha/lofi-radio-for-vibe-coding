@@ -47,7 +47,7 @@ export default function TodoList({ onClose }) {
       dragControls={controls}
       dragListener={false}
       dragMomentum={false}
-      className="absolute top-24 right-80 w-72 bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden z-40"
+      className="absolute top-32 md:top-24 right-4 md:right-80 w-[calc(100vw-32px)] md:w-72 max-w-sm bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden z-40"
     >
       <div 
         onPointerDown={(e) => controls.start(e)}

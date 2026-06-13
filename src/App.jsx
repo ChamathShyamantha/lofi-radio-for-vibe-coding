@@ -39,6 +39,13 @@ function App() {
   useWeatherSync(ambientState, themeState);
   useMidi();
 
+  // Sync theme when station changes
+  useEffect(() => {
+    if (radioState.station?.defaultTheme) {
+      themeState.setTheme(radioState.station.defaultTheme);
+    }
+  }, [radioState.station?.id]);
+
   // Check alarm
   useEffect(() => {
     const interval = setInterval(() => {
@@ -115,7 +122,7 @@ function App() {
         />
       ))}
 
-      <AtmosphereLayer />
+      <AtmosphereLayer rainVolume={ambientState.volumes.rain || 0} />
       <PhysicsCanvas getAudioData={radioState.getAudioData} isPlaying={radioState.isPlaying} />
 
       <Toolbar 
@@ -127,38 +134,24 @@ function App() {
       />
       
       {/* Ambient Mixer Container */}
-      <div className="absolute inset-y-0 right-8 z-20 pointer-events-none flex items-center">
+      <div className="absolute top-24 right-4 md:inset-y-0 md:right-8 z-20 pointer-events-none flex items-start md:items-center">
         <motion.div drag dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <AmbientMixer ambientState={ambientState} />
         </motion.div>
       </div>
       
       {/* Top right Clock */}
-      <div className="absolute top-8 right-8 z-20 pointer-events-none text-right flex flex-col gap-4">
+      <div className="absolute top-4 right-4 md:top-8 md:right-8 z-20 pointer-events-none text-right flex flex-col gap-1 md:gap-4 mt-14 md:mt-0">
         <div>
-          <h2 className="font-serif text-3xl text-lamp">{timeString}</h2>
-          <p className="font-mono text-xs text-phosphor">{greeting}</p>
+          <h2 className="font-serif text-xl md:text-3xl text-lamp">{timeString}</h2>
+          <p className="font-mono text-[10px] md:text-xs text-phosphor">{greeting}</p>
         </div>
       </div>
 
       {/* Popout Windows */}
-      {showTimerUI && (
-        <div className="absolute top-24 right-8 z-30 pointer-events-none">
-          <PomodoroUI timerState={timerState} onClose={() => setShowTimerUI(false)} />
-        </div>
-      )}
-
-      {showSticky && (
-        <div className="absolute top-24 left-8 z-30 pointer-events-none">
-          <StickyNotes onClose={() => setShowSticky(false)} />
-        </div>
-      )}
-
-      {showTodo && (
-        <div className="absolute top-24 left-80 z-30 pointer-events-none">
-          <TodoList onClose={() => setShowTodo(false)} />
-        </div>
-      )}
+      {showTimerUI && <PomodoroUI timerState={timerState} onClose={() => setShowTimerUI(false)} />}
+      {showSticky && <StickyNotes onClose={() => setShowSticky(false)} />}
+      {showTodo && <TodoList onClose={() => setShowTodo(false)} />}
       
       {/* Container for UI */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-40">

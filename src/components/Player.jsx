@@ -3,6 +3,7 @@ import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX } from 'lucide-rea
 
 export default function Player({ station, isPlaying, volume, setVolume, togglePlay, nextStation, prevStation, getAudioData }) {
   const canvasRef = useRef(null);
+  const peaksRef = useRef([]);
 
   useEffect(() => {
     if (!getAudioData) return;
@@ -11,6 +12,14 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
+    
+    // Resize handler
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     const draw = () => {
       animationId = requestAnimationFrame(draw);
@@ -23,22 +32,40 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
       if (isPlaying) {
         const data = getAudioData();
         if (data) {
-          const barWidth = 4;
-          const gap = 2;
+          const barWidth = 8;
+          const gap = 4;
           const numBars = Math.floor(width / (barWidth + gap));
+          
+          if (peaksRef.current.length !== numBars) {
+            peaksRef.current = new Array(numBars).fill(0);
+          }
           
           for (let i = 0; i < numBars; i++) {
             const dataIndex = Math.floor(i * (data.length / numBars));
             const value = data[dataIndex] || 0;
-            const barHeight = (value / 255) * height;
+            const barHeight = (value / 255) * (height * 0.8);
             
+            // Draw main bar
             ctx.fillStyle = 'var(--color-phosphor)';
+            ctx.globalAlpha = 0.5;
             ctx.fillRect(i * (barWidth + gap), height - barHeight, barWidth, barHeight);
+            
+            // Draw falling peak
+            if (barHeight > peaksRef.current[i]) {
+              peaksRef.current[i] = barHeight;
+            } else {
+              peaksRef.current[i] -= 1.5; // Gravity
+              if (peaksRef.current[i] < 0) peaksRef.current[i] = 0;
+            }
+            
+            ctx.globalAlpha = 1.0;
+            ctx.fillStyle = 'var(--color-lamp)';
+            ctx.fillRect(i * (barWidth + gap), height - peaksRef.current[i] - 2, barWidth, 2);
           }
         }
       } else {
          ctx.fillStyle = 'var(--color-haze)';
-         ctx.globalAlpha = 0.3;
+         ctx.globalAlpha = 0.1;
          ctx.fillRect(0, height / 2, width, 1);
          ctx.globalAlpha = 1.0;
       }
@@ -46,13 +73,19 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
     
     draw();
     
-    return () => cancelAnimationFrame(animationId);
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
   }, [getAudioData, isPlaying]);
 
   return (
-    <div className="flex flex-col items-center gap-4 bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl min-w-[320px]">
+    <div className="relative flex flex-col items-center gap-4 bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl w-[calc(100vw-32px)] md:w-[400px] max-w-lg overflow-hidden">
       
-      <div className="flex flex-col gap-1 w-full items-center">
+      {/* Background Retro Visualizer */}
+      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" />
+      
+      <div className="relative z-10 flex flex-col gap-1 w-full items-center">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-phosphor shadow-[0_0_8px_var(--color-phosphor)]' : 'bg-ember'}`} />
           <div className="text-center">
@@ -60,10 +93,9 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
             <p className="font-mono text-xs text-haze">{station.vibe}</p>
           </div>
         </div>
-        <canvas ref={canvasRef} width="160" height="24" className="mx-auto mt-2 opacity-80" />
       </div>
 
-      <div className="flex items-center gap-6 mt-2">
+      <div className="relative z-10 flex items-center gap-6 mt-2">
         <button 
           onClick={prevStation} 
           onPointerDown={(e) => e.stopPropagation()} 
@@ -89,7 +121,7 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
         </button>
       </div>
 
-      <div className="flex items-center gap-2 w-full mt-2 px-4">
+      <div className="relative z-10 flex items-center gap-2 w-full mt-2 px-4">
         <button 
           onClick={() => setVolume(volume === 0 ? 0.5 : 0)} 
           onPointerDown={(e) => e.stopPropagation()} 

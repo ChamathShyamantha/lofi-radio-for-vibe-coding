@@ -6,7 +6,7 @@ export default function PomodoroUI({ timerState, onClose }) {
   const controls = useDragControls();
 
   return (
-    <motion.div drag dragControls={controls} dragListener={false} dragMomentum={false} className="pointer-events-auto bg-dusk/80 backdrop-blur-md border border-ember/20 rounded-xl shadow-2xl flex flex-col gap-4 min-w-[200px] z-40 overflow-hidden pb-4">
+    <motion.div drag dragControls={controls} dragListener={false} dragMomentum={false} className="absolute top-32 md:top-24 right-4 md:right-8 pointer-events-auto bg-dusk/80 backdrop-blur-md border border-ember/20 rounded-xl shadow-2xl flex flex-col gap-4 w-[calc(100vw-32px)] md:w-auto md:min-w-[200px] max-w-sm z-40 overflow-hidden pb-4">
       <div 
         className="w-full flex justify-between p-3 bg-ink/50 border-b border-ember/10 cursor-grab active:cursor-grabbing" 
         onPointerDown={e => controls.start(e)}
