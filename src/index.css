@@ -84,6 +84,19 @@
   box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
 }
 
+@keyframes glitch-anim {
+  0% { filter: hue-rotate(0deg) contrast(1) brightness(1); transform: translate(0); }
+  20% { filter: hue-rotate(90deg) contrast(2) brightness(1.5) invert(0.2); transform: translate(-2px, 2px); }
+  40% { filter: hue-rotate(-90deg) contrast(0.5) brightness(0.8) sepia(1); transform: translate(2px, -2px); }
+  60% { filter: hue-rotate(180deg) contrast(3) brightness(1.2); transform: translate(-2px, -2px); }
+  80% { filter: hue-rotate(45deg) contrast(1.5) brightness(0.5) invert(0.1); transform: translate(2px, 2px); }
+  100% { filter: hue-rotate(0deg) contrast(1) brightness(1); transform: translate(0); }
+}
+
+.crt-glitch {
+  animation: glitch-anim 0.3s cubic-bezier(.25, .46, .45, .94) both;
+}
+
 :root {
   background-color: var(--theme-ink);
   color: var(--theme-haze);

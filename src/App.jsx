@@ -37,6 +37,7 @@ function App() {
   const [showNotes, setShowNotes] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
   const [showTodo, setShowTodo] = useState(() => localStorage.getItem('drift_todo_ui') === 'true');
+  const [isGlitching, setIsGlitching] = useState(false);
   
   useWeatherSync(ambientState, themeState);
   useMidi();
@@ -46,6 +47,11 @@ function App() {
     if (radioState.station?.defaultTheme) {
       themeState.setTheme(radioState.station.defaultTheme);
     }
+    
+    // Trigger intentional retro glitch effect on channel change
+    setIsGlitching(true);
+    const timer = setTimeout(() => setIsGlitching(false), 400);
+    return () => clearTimeout(timer);
   }, [radioState.station?.id]);
 
   // Check alarm
@@ -108,7 +114,7 @@ function App() {
   }, []);
 
   return (
-    <div className={`relative w-full h-screen overflow-hidden ${themeState.theme} transition-colors duration-1000`}>
+    <div className={`relative w-full h-[100dvh] overflow-hidden ${themeState.theme} transition-colors duration-1000 ${isGlitching ? 'crt-glitch' : ''}`}>
       {/* CRT Effects */}
       <div className="absolute inset-0 crt-overlay opacity-40 pointer-events-none"></div>
       <div className="absolute inset-0 crt-vignette"></div>
@@ -157,16 +163,17 @@ function App() {
         {showTodo && <TodoList onClose={() => setShowTodo(false)} key="todo" />}
       </AnimatePresence>
       
-      {/* Container for UI */}
-      <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-24 md:pb-40 pt-10 md:pt-0">
-        <div className="absolute top-20 md:relative md:top-auto flex flex-col items-center w-full px-12 md:px-0">
-          <h1 className="font-serif italic text-5xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight text-center leading-[0.9] md:leading-normal">
-            VibeCode<span className="block md:inline mt-1 md:mt-0"> FM</span>
-          </h1>
-          <p className="font-mono text-[10px] md:text-xs text-haze/60 mt-2 md:mb-8 pointer-events-none select-none text-center">the ultimate environment for vibe coders</p>
-        </div>
+      {/* Title */}
+      <div className="absolute top-20 md:top-[15%] inset-x-0 z-20 flex flex-col items-center w-full px-12 md:px-0 pointer-events-none">
+        <h1 className="font-serif italic text-5xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight text-center leading-[0.9] md:leading-normal">
+          VibeCode<span className="block md:inline mt-1 md:mt-0"> FM</span>
+        </h1>
+        <p className="font-mono text-[10px] md:text-xs text-haze/60 mt-2 pointer-events-none select-none text-center">the ultimate environment for vibe coders</p>
+      </div>
         
-        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing mt-24 md:mt-0">
+      {/* Terminal */}
+      <div className="absolute top-[45%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center w-[calc(100vw-32px)] md:w-auto">
+        <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Terminal onCommand={parseCommand} />
         </motion.div>
       </div>
