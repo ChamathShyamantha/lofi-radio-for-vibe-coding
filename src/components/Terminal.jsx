@@ -1,6 +1,42 @@
 import { useState, useEffect, useRef } from 'react';
 import { SNIPPETS, highlightText } from '../data/codeSnippets';
 
+let audioCtx = null;
+
+function playKeySound() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    // Deep thock sound
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(100 + Math.random() * 20, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+    
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.05);
+  } catch (e) {
+    // Ignore audio errors if user hasn't interacted
+  }
+}
+
 export default function Terminal({ onCommand }) {
   const [mode, setMode] = useState('idle'); // 'idle' | 'input'
   const [displayText, setDisplayText] = useState('');
@@ -46,6 +82,11 @@ export default function Terminal({ onCommand }) {
   };
 
   const handleKeyDown = (e) => {
+    // Play mechanical thock on key press
+    if (e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') {
+      playKeySound();
+    }
+
     if (e.key === 'Enter') {
       if (inputValue.trim()) {
         const response = onCommand(inputValue);
@@ -84,6 +125,13 @@ export default function Terminal({ onCommand }) {
           </div>
         ) : (
           <div className="flex flex-col gap-2">
+            {log.length === 0 && (
+              <div className="text-haze/80 mb-2 leading-relaxed">
+                Welcome to <span className="text-lamp">VibeOS v1.0</span><br/>
+                Type <span className="text-phosphor">'help'</span> to see a list of available commands.<br/>
+                <span className="opacity-50">-------------------------------------------</span>
+              </div>
+            )}
             {log.map((entry, i) => (
               <div key={i} className="flex flex-col">
                 <div className="text-phosphor"><span className="text-lamp mr-2">{'>'}</span>{entry.cmd}</div>
@@ -100,7 +148,7 @@ export default function Terminal({ onCommand }) {
                 onKeyDown={handleKeyDown}
                 onBlur={() => { if (!inputValue) setMode('idle'); }}
                 className="bg-transparent border-none outline-none flex-1 text-phosphor placeholder-haze/30"
-                placeholder="type 'help'..."
+                placeholder="try typing 'rain' or 'help'..."
                 spellCheck="false"
               />
             </div>
