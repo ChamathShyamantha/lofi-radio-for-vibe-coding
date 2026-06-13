@@ -69,6 +69,24 @@
   --theme-haze: #b5c1c4;
 }
 
+.theme-void {
+  --theme-ink: #05050A;
+  --theme-dusk: #0F111A;
+  --theme-lamp: #7188F6;
+  --theme-ember: #8A4EF6;
+  --theme-phosphor: #A8B8FF;
+  --theme-haze: #4E598C;
+}
+
+.theme-ocean {
+  --theme-ink: #001220;
+  --theme-dusk: #001B2E;
+  --theme-lamp: #00E5FF;
+  --theme-ember: #FF85A2;
+  --theme-phosphor: #48E5C2;
+  --theme-haze: #7BA5B5;
+}
+
 .crt-overlay {
   pointer-events: none;
   z-index: 50;
