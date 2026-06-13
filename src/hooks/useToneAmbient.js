@@ -3,7 +3,7 @@ import * as Tone from 'tone';
 
 export function useToneAmbient() {
   const [volumes, setVolumes] = useState(() => {
-    const saved = localStorage.getItem('drift_ambient_v2');
+    const saved = localStorage.getItem('drift_ambient_v3');
     return saved ? JSON.parse(saved) : { rain: 0, crackle: 0, fire: 0, synth: 0 };
   });
 
@@ -11,7 +11,7 @@ export function useToneAmbient() {
   const isStarted = useRef(false);
 
   useEffect(() => {
-    localStorage.setItem('drift_ambient_v2', JSON.stringify(volumes));
+    localStorage.setItem('drift_ambient_v3', JSON.stringify(volumes));
   }, [volumes]);
 
   const initSynths = async () => {

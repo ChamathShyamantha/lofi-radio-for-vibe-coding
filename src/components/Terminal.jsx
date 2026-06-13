@@ -76,7 +76,7 @@ export default function Terminal({ onCommand }) {
       </div>
 
       {/* Terminal Body */}
-      <div className="p-6 h-[300px] font-mono text-sm overflow-y-auto relative z-20 flex flex-col justify-end">
+      <div className="p-4 md:p-6 h-[200px] md:h-[300px] font-mono text-[10px] md:text-sm overflow-y-auto relative z-20 flex flex-col justify-end">
         {mode === 'idle' ? (
           <div className="text-phosphor/90 drop-shadow-[0_0_8px_rgba(159,232,141,0.3)]">
             <span dangerouslySetInnerHTML={highlightText(displayText)} />

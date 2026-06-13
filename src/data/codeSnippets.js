@@ -12,9 +12,12 @@ export const SNIPPETS = [
 
 export function highlightText(text) {
   let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
     .replace(/\/\/.*/g, match => `<span class="text-haze">${match}</span>`)
-    .replace(/(while|if|for|const|let|var|return|await)/g, `<span class="text-phosphor">$1</span>`)
-    .replace(/('.*'|".*")/g, `<span class="text-lamp">$1</span>`)
+    .replace(/\b(while|if|for|const|let|var|return|await)\b/g, `<span class="text-phosphor">$1</span>`)
+    .replace(/('.*?')/g, `<span class="text-lamp">$1</span>`)
     .replace(/([a-zA-Z0-9_]+)\(/g, `<span class="text-ember">$1</span>(`);
 
   return { __html: html };

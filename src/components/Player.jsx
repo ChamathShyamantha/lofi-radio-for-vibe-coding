@@ -26,42 +26,45 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
       
       const width = canvas.width;
       const height = canvas.height;
+      const time = Date.now() / 1000;
       
       ctx.clearRect(0, 0, width, height);
       
       if (isPlaying) {
-        const data = getAudioData();
-        if (data) {
-          const barWidth = 8;
-          const gap = 4;
-          const numBars = Math.floor(width / (barWidth + gap));
+        const barWidth = 8;
+        const gap = 4;
+        const numBars = Math.floor(width / (barWidth + gap));
+        
+        if (peaksRef.current.length !== numBars) {
+          peaksRef.current = new Array(numBars).fill(0);
+        }
+        
+        for (let i = 0; i < numBars; i++) {
+          // Generative visualizer: sine wave + noise + beat pulsing
+          const noise = Math.random() * 0.5 + 0.5;
+          const wave = Math.sin(time * 2 + i * 0.1) * 0.5 + 0.5;
+          const beat = Math.pow(Math.sin(time * 3.14 * (80/60)), 4); // 80 bpm
           
-          if (peaksRef.current.length !== numBars) {
-            peaksRef.current = new Array(numBars).fill(0);
+          let simulatedValue = (wave * 0.3 + noise * 0.4 + beat * 0.3) * 255;
+          
+          const barHeight = (simulatedValue / 255) * (height * 0.8);
+          
+          // Draw main bar
+          ctx.fillStyle = 'var(--color-phosphor)';
+          ctx.globalAlpha = 0.5;
+          ctx.fillRect(i * (barWidth + gap), height - barHeight, barWidth, barHeight);
+          
+          // Draw falling peak
+          if (barHeight > peaksRef.current[i]) {
+            peaksRef.current[i] = barHeight;
+          } else {
+            peaksRef.current[i] -= 1.5; // Gravity
+            if (peaksRef.current[i] < 0) peaksRef.current[i] = 0;
           }
           
-          for (let i = 0; i < numBars; i++) {
-            const dataIndex = Math.floor(i * (data.length / numBars));
-            const value = data[dataIndex] || 0;
-            const barHeight = (value / 255) * (height * 0.8);
-            
-            // Draw main bar
-            ctx.fillStyle = 'var(--color-phosphor)';
-            ctx.globalAlpha = 0.5;
-            ctx.fillRect(i * (barWidth + gap), height - barHeight, barWidth, barHeight);
-            
-            // Draw falling peak
-            if (barHeight > peaksRef.current[i]) {
-              peaksRef.current[i] = barHeight;
-            } else {
-              peaksRef.current[i] -= 1.5; // Gravity
-              if (peaksRef.current[i] < 0) peaksRef.current[i] = 0;
-            }
-            
-            ctx.globalAlpha = 1.0;
-            ctx.fillStyle = 'var(--color-lamp)';
-            ctx.fillRect(i * (barWidth + gap), height - peaksRef.current[i] - 2, barWidth, 2);
-          }
+          ctx.globalAlpha = 1.0;
+          ctx.fillStyle = 'var(--color-lamp)';
+          ctx.fillRect(i * (barWidth + gap), height - peaksRef.current[i] - 2, barWidth, 2);
         }
       } else {
          ctx.fillStyle = 'var(--color-haze)';
