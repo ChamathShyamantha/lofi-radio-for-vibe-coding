@@ -61,7 +61,7 @@ export default function Terminal({ onCommand }) {
 
   return (
     <div 
-      className="relative z-20 w-[500px] max-w-[90vw] bg-ink/80 backdrop-blur-sm border border-haze/20 rounded-lg shadow-2xl overflow-hidden cursor-text pointer-events-auto group transition-all"
+      className="relative z-20 w-[500px] max-w-[calc(100vw-80px)] md:max-w-full bg-ink/80 backdrop-blur-sm border border-haze/20 rounded-lg shadow-2xl overflow-hidden cursor-text pointer-events-auto group transition-all"
       onClick={handleContainerClick}
     >
       {/* CRT Scanline effect */}

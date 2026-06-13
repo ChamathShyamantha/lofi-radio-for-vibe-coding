@@ -172,7 +172,7 @@ function App() {
       </div>
         
       {/* Terminal */}
-      <div className="absolute top-[45%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center w-[calc(100vw-32px)] md:w-auto">
+      <div className="absolute top-[45%] md:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none flex justify-center w-[calc(100vw-80px)] md:w-auto">
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <Terminal onCommand={parseCommand} />
         </motion.div>

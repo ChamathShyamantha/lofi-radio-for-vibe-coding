@@ -83,7 +83,7 @@ export default function Player({ station, isPlaying, volume, setVolume, togglePl
   }, [getAudioData, isPlaying]);
 
   return (
-    <div className="relative flex flex-col items-center gap-4 bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl w-[calc(100vw-32px)] md:w-[400px] max-w-lg overflow-hidden">
+    <div className="relative flex flex-col items-center gap-4 bg-dusk/50 backdrop-blur-md p-6 rounded-2xl border border-haze/10 shadow-2xl w-[calc(100vw-80px)] md:w-[400px] max-w-lg overflow-hidden">
       
       {/* Background Retro Visualizer */}
       <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-30 z-0" />
