@@ -61,12 +61,12 @@
 }
 
 .theme-dawn {
-  --theme-ink: #f8edeb;
-  --theme-dusk: #fcd5ce;
-  --theme-lamp: #f08080;
-  --theme-ember: #e5989b;
-  --theme-phosphor: #f4a261;
-  --theme-haze: #b5838d;
+  --theme-ink: #1a1c29;
+  --theme-dusk: #2d324d;
+  --theme-lamp: #f6a071;
+  --theme-ember: #d87b84;
+  --theme-phosphor: #8ecae6;
+  --theme-haze: #b5c1c4;
 }
 
 .crt-overlay {
