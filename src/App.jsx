@@ -142,10 +142,10 @@ function App() {
         </motion.div>
       </div>
       
-      {/* Top right Clock */}
-      <div className="absolute top-4 right-4 md:top-8 md:right-8 z-20 pointer-events-none text-right flex flex-col gap-1 md:gap-4 mt-14 md:mt-0">
-        <div>
-          <h2 className="font-serif text-xl md:text-3xl text-lamp">{timeString}</h2>
+      {/* Top Clock */}
+      <div className="absolute top-4 inset-x-0 flex flex-col items-center md:inset-x-auto md:top-8 md:right-8 md:items-end z-20 pointer-events-none gap-1 md:gap-4">
+        <div className="text-center md:text-right">
+          <h2 className="font-serif text-2xl md:text-3xl text-lamp">{timeString}</h2>
           <p className="font-mono text-[10px] md:text-xs text-phosphor">{greeting}</p>
         </div>
       </div>
