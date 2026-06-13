@@ -159,7 +159,9 @@ function App() {
       
       {/* Container for UI */}
       <div className="relative z-20 flex flex-col items-center justify-center h-full pointer-events-none pb-16 md:pb-40">
-        <h1 className="font-serif italic text-5xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight">VibeCode FM</h1>
+        <h1 className="font-serif italic text-6xl md:text-6xl text-lamp drop-shadow-lg mb-0 pointer-events-none select-none tracking-tight text-center leading-[0.9] md:leading-normal">
+          VibeCode<span className="block md:inline mt-2 md:mt-0">FM</span>
+        </h1>
         <p className="font-mono text-[10px] md:text-xs text-haze/60 mb-4 md:mb-8 pointer-events-none select-none text-center px-4">the ultimate environment for vibe coders</p>
         
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
