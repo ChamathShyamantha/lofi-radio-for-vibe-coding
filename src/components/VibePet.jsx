@@ -43,8 +43,8 @@ export default function VibePet() {
   useEffect(() => {
     let timeout;
     
-    // Show up within the first 30 seconds
-    const initialDelay = Math.random() * 15000 + 15000; // 15s to 30s
+    // Show up exactly after 5 seconds on load
+    const initialDelay = 5000;
 
     const showPet = () => {
       setQuote(VIBE_QUOTES[Math.floor(Math.random() * VIBE_QUOTES.length)]);
