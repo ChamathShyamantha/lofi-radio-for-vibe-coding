@@ -8,6 +8,7 @@ import PomodoroUI from './components/PomodoroUI';
 import StickyNotes from './components/StickyNotes';
 import TodoList from './components/TodoList';
 import Journal from './components/Journal';
+import VibePet from './components/VibePet';
 import { useRadio } from './hooks/useRadio';
 import { useCommands } from './hooks/useCommands';
 import { useToneAmbient } from './hooks/useToneAmbient';
@@ -197,6 +198,8 @@ function App() {
           ☕ buy me a coffee
         </a>
       </div>
+
+      <VibePet />
     </div>
   );
 }
