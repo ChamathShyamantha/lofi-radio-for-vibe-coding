@@ -1,8 +1,9 @@
-import { motion } from 'motion/react';
+import { motion, useDragControls } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, ListTodo, Trash2 } from 'lucide-react';
 
 export default function TodoList({ onClose }) {
+  const controls = useDragControls();
   const [tasks, setTasks] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('drift_todo_list') || '[]');
@@ -43,11 +44,15 @@ export default function TodoList({ onClose }) {
   return (
     <motion.div 
       drag
+      dragControls={controls}
+      dragListener={false}
       dragMomentum={false}
-      className="absolute top-24 right-80 w-72 bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing z-40"
-      onPointerDown={(e) => e.stopPropagation()}
+      className="absolute top-24 right-80 w-72 bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden z-40"
     >
-      <div className="bg-ink/50 p-3 flex justify-between items-center border-b border-haze/10">
+      <div 
+        onPointerDown={(e) => controls.start(e)}
+        className="bg-ink/50 p-3 flex justify-between items-center border-b border-haze/10 cursor-grab active:cursor-grabbing"
+      >
         <h3 className="text-lamp font-serif italic flex items-center gap-2"><ListTodo size={14} /> To-Do</h3>
         <div className="flex items-center gap-2">
           {done > 0 && (
@@ -75,7 +80,7 @@ export default function TodoList({ onClose }) {
         </div>
       )}
 
-      <ul className="flex flex-col gap-1 p-3 max-h-[280px] overflow-y-auto" onPointerDown={e => e.stopPropagation()}>
+      <ul className="flex flex-col gap-1 p-3 max-h-[280px] overflow-y-auto">
         {tasks.map(t => (
           <li key={t.id} className="flex items-start gap-2 group py-1">
             <button 
@@ -97,7 +102,7 @@ export default function TodoList({ onClose }) {
         )}
       </ul>
 
-      <div onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
+      <div className="flex gap-2 p-3 border-t border-haze/10">
         <input 
           type="text" 
           value={newTask} 

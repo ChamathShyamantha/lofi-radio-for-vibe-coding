@@ -1,8 +1,9 @@
-import { motion } from 'motion/react';
+import { motion, useDragControls } from 'motion/react';
 import { useState, useEffect } from 'react';
 import { Plus, X, Check, StickyNote } from 'lucide-react';
 
 export default function StickyNotes({ onClose }) {
+  const controls = useDragControls();
   const [notes, setNotes] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('drift_sticky_notes') || '[]');
@@ -32,16 +33,20 @@ export default function StickyNotes({ onClose }) {
   return (
     <motion.div 
       drag
+      dragControls={controls}
+      dragListener={false}
       dragMomentum={false}
-      className="absolute top-24 left-8 w-72 bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing z-40"
-      onPointerDown={(e) => e.stopPropagation()}
+      className="absolute top-24 left-8 w-72 bg-dusk/40 backdrop-blur-md rounded-xl border border-haze/10 shadow-2xl overflow-hidden z-40"
     >
-      <div className="bg-ink/50 p-3 flex justify-between items-center border-b border-haze/10">
+      <div 
+        onPointerDown={(e) => controls.start(e)}
+        className="bg-ink/50 p-3 flex justify-between items-center border-b border-haze/10 cursor-grab active:cursor-grabbing"
+      >
         <h3 className="text-lamp font-serif italic flex items-center gap-2"><StickyNote size={14} /> Sticky Notes</h3>
         <button onClick={onClose} className="text-haze hover:text-lamp transition-colors"><X size={16} /></button>
       </div>
 
-      <div className="flex flex-col gap-2 p-3 max-h-[300px] overflow-y-auto" onPointerDown={e => e.stopPropagation()}>
+      <div className="flex flex-col gap-2 p-3 max-h-[300px] overflow-y-auto">
         {notes.map(n => (
           <div key={n.id} className="relative group rounded-lg p-3" style={{ backgroundColor: n.color + '20', borderLeft: `3px solid ${n.color}` }}>
             <p className="text-sm text-haze break-words pr-5">{n.text}</p>
@@ -51,7 +56,7 @@ export default function StickyNotes({ onClose }) {
         {notes.length === 0 && <p className="text-xs text-haze/50 italic text-center py-4">No notes yet. Jot something down.</p>}
       </div>
 
-      <div onPointerDown={e => e.stopPropagation()} className="flex gap-2 p-3 border-t border-haze/10">
+      <div className="flex gap-2 p-3 border-t border-haze/10">
         <input 
           type="text" 
           value={newNote} 
