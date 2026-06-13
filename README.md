@@ -1,6 +1,8 @@
-# 📻 Drift FM
+# 📻 VibeCode FM
 
-A highly interactive, aesthetically-driven Lofi Radio built for the perfect "Vibe Coding" session. Drift FM isn't just a static player—it's a living, breathing workspace featuring zero-gravity physics, a fully functional terminal centerpiece, and authentic CRT monitor effects.
+**Live Demo:** [https://vibecodefm.vercel.app/](https://vibecodefm.vercel.app/)
+
+A highly interactive, aesthetically-driven Lofi Radio built for the perfect "Vibe Coding" session. VibeCode FM isn't just a static player—it's a living, breathing workspace featuring zero-gravity physics, a fully functional terminal centerpiece, and authentic CRT monitor effects.
 
 ## ✨ Features
 
