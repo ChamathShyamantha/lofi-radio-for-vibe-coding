@@ -5,35 +5,43 @@ let audioCtx = null;
 
 function playKeySound() {
   try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 800;
+    const t = audioCtx.currentTime;
 
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
+    // 1. Switch stem hitting housing (High frequency snap)
+    const osc1 = audioCtx.createOscillator();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(800 + Math.random() * 100, t);
+    osc1.frequency.exponentialRampToValueAtTime(200, t + 0.015);
+
+    const gain1 = audioCtx.createGain();
+    gain1.gain.setValueAtTime(0.2, t);
+    gain1.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
     
-    // Deep thock sound
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(100 + Math.random() * 20, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.05);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+
+    // 2. Keyboard plate resonance (Deep, creamy thock)
+    const osc2 = audioCtx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(110 + Math.random() * 10, t);
+    osc2.frequency.exponentialRampToValueAtTime(40, t + 0.05);
+
+    const gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0.6, t);
+    gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
     
-    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
     
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.05);
+    osc1.start(t);
+    osc2.start(t);
+    osc1.stop(t + 0.02);
+    osc2.stop(t + 0.06);
   } catch (e) {
-    // Ignore audio errors if user hasn't interacted
+    // Ignore audio errors
   }
 }
 
