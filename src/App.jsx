@@ -142,7 +142,7 @@ function App() {
       />
       
       {/* Ambient Mixer Container */}
-      <div className="absolute top-24 right-4 md:inset-y-0 md:right-8 z-20 pointer-events-none flex items-start md:items-center">
+      <div className="absolute top-4 right-4 md:inset-y-0 md:right-8 z-20 pointer-events-none flex items-start md:items-center">
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
           <AmbientMixer ambientState={ambientState} />
         </motion.div>
