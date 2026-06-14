@@ -18,6 +18,7 @@ import { useClock } from './hooks/useClock';
 import { useTimer } from './hooks/useTimer';
 import { useTheme } from './hooks/useTheme';
 import { useWeatherSync } from './hooks/useWeatherSync';
+import { useSleepTimer } from './hooks/useSleepTimer';
 import { useMidi } from './hooks/useMidi';
 import { useNowPlaying } from './hooks/useNowPlaying';
 import { motion, AnimatePresence } from 'motion/react';
@@ -35,6 +36,7 @@ function App() {
   const { timeString, greeting } = useClock();
   const timerState = useTimer();
   const themeState = useTheme();
+  const sleepTimerState = useSleepTimer(radioState);
   const isMobile = useIsMobile();
   
   const [showNotes, setShowNotes] = useState(false);
@@ -42,6 +44,7 @@ function App() {
   const [showTodo, setShowTodo] = useState(() => localStorage.getItem('drift_todo_ui') === 'true');
   const [isGlitching, setIsGlitching] = useState(false);
   const [glitchEnabled, setGlitchEnabled] = useState(() => localStorage.getItem('drift_glitch') !== 'false');
+  const [showScenes, setShowScenes] = useState(() => localStorage.getItem('drift_scenes') === 'true');
   const [showShortcuts, setShowShortcuts] = useState(false);
   const nowPlaying = useNowPlaying(radioState.station);
 
@@ -49,6 +52,7 @@ function App() {
   useMidi();
 
   useEffect(() => { localStorage.setItem('drift_glitch', glitchEnabled); }, [glitchEnabled]);
+  useEffect(() => { localStorage.setItem('drift_scenes', showScenes); }, [showScenes]);
 
   // Sync theme when station changes
   useEffect(() => {
@@ -89,6 +93,7 @@ function App() {
     ambientState,
     timerState,
     themeState,
+    sleepTimerState,
     setShowSticky,
     setShowTimerUI,
     setShowJournal
@@ -154,7 +159,7 @@ function App() {
         />
       ))}
 
-      <AtmosphereLayer rainVolume={ambientState.volumes.rain || 0} />
+      <AtmosphereLayer rainVolume={ambientState.volumes.rain || 0} theme={themeState.theme} showScenes={showScenes} />
       <PhysicsCanvas getAudioData={radioState.getAudioData} isPlaying={radioState.isPlaying} />
 
       <Toolbar 
@@ -165,6 +170,8 @@ function App() {
         toggleTodo={() => setShowTodo(prev => !prev)}
         glitchEnabled={glitchEnabled}
         toggleGlitch={() => setGlitchEnabled(prev => !prev)}
+        showScenes={showScenes}
+        toggleScenes={() => setShowScenes(prev => !prev)}
       />
       
       {/* Ambient Mixer Container */}

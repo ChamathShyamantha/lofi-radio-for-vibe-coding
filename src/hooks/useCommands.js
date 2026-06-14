@@ -1,4 +1,4 @@
-export function useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI, setShowJournal }) {
+export function useCommands({ radioState, ambientState, timerState, themeState, sleepTimerState, setShowSticky, setShowTimerUI, setShowJournal }) {
   const { togglePlay, nextStation, prevStation, setVolume, setStation } = radioState;
   const { setLoopVolume } = ambientState || {};
   const { startTimer, stopTimer } = timerState || {};
@@ -59,6 +59,20 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
           return 'Usage: timer <minutes> | stop | ui';
         }
         return 'Timer not ready';
+      case 'sleep':
+        if (sleepTimerState && sleepTimerState.startSleepTimer) {
+          if (args[1] === 'stop' || args[1] === 'clear') {
+            sleepTimerState.cancelSleepTimer();
+            return 'Sleep timer cancelled.';
+          }
+          const val = parseInt(args[1], 10);
+          if (!isNaN(val) && val > 0) {
+            sleepTimerState.startSleepTimer(val);
+            return `Sleep timer set for ${val} minutes. Radio will stop automatically.`;
+          }
+          return 'Usage: sleep <minutes> | stop';
+        }
+        return 'Sleep timer not ready';
       case 'rain':
       case 'fire':
       case 'crackle':

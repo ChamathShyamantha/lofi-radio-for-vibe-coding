@@ -1,8 +1,8 @@
-import { Palette, Timer, StickyNote, ListTodo, Maximize, Minimize, Zap, ZapOff } from 'lucide-react';
+import { Palette, Timer, StickyNote, ListTodo, Maximize, Minimize, Zap, ZapOff, Image as ImageIcon, ImageOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
 
-export default function Toolbar({ radioState, themeState, toggleSticky, toggleTimer, toggleTodo, glitchEnabled, toggleGlitch }) {
+export default function Toolbar({ radioState, themeState, toggleSticky, toggleTimer, toggleTodo, glitchEnabled, toggleGlitch, showScenes, toggleScenes }) {
   const { isPlaying, togglePlay } = radioState;
   const { theme, setTheme } = themeState;
   const themes = ['lamplight', 'vaporwave', 'matrix', 'dawn', 'void', 'ocean', 'neon', 'crimson'];
@@ -51,6 +51,9 @@ export default function Toolbar({ radioState, themeState, toggleSticky, toggleTi
       </button>
       <button onClick={toggleGlitch} className={`p-2 md:p-3 backdrop-blur-md border rounded-xl transition-colors group relative flex-shrink-0 ${glitchEnabled ? 'bg-dusk/50 border-haze/10 hover:bg-haze/20 text-lamp hover:text-lamp' : 'bg-dusk/30 border-haze/5 text-haze/30 hover:text-haze/60 hover:bg-haze/10'}`} title={glitchEnabled ? 'Glitch: ON' : 'Glitch: OFF'}>
         {glitchEnabled ? <Zap size={iconSize} /> : <ZapOff size={iconSize} />}
+      </button>
+      <button onClick={toggleScenes} className={`p-2 md:p-3 backdrop-blur-md border rounded-xl transition-colors group relative flex-shrink-0 ${showScenes ? 'bg-dusk/50 border-haze/10 hover:bg-haze/20 text-lamp hover:text-lamp' : 'bg-dusk/30 border-haze/5 text-haze/30 hover:text-haze/60 hover:bg-haze/10'}`} title={showScenes ? 'Animated Scenes: ON' : 'Animated Scenes: OFF'}>
+        {showScenes ? <ImageIcon size={iconSize} /> : <ImageOff size={iconSize} />}
       </button>
       <button onClick={toggleFullscreen} className="p-2 md:p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative flex-shrink-0 md:mt-auto" title="Toggle Fullscreen">
         {isFullscreen ? <Minimize size={iconSize} /> : <Maximize size={iconSize} />}
