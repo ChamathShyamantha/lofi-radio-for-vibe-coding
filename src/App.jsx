@@ -39,9 +39,12 @@ function App() {
   const [showJournal, setShowJournal] = useState(false);
   const [showTodo, setShowTodo] = useState(() => localStorage.getItem('drift_todo_ui') === 'true');
   const [isGlitching, setIsGlitching] = useState(false);
-  
+  const [glitchEnabled, setGlitchEnabled] = useState(() => localStorage.getItem('drift_glitch') !== 'false');
+
   useWeatherSync(ambientState, themeState);
   useMidi();
+
+  useEffect(() => { localStorage.setItem('drift_glitch', glitchEnabled); }, [glitchEnabled]);
 
   // Sync theme when station changes
   useEffect(() => {
@@ -49,10 +52,12 @@ function App() {
       themeState.setTheme(radioState.station.defaultTheme);
     }
     
-    // Trigger intentional retro glitch effect on channel change
-    setIsGlitching(true);
-    const timer = setTimeout(() => setIsGlitching(false), 400);
-    return () => clearTimeout(timer);
+    // Trigger intentional retro glitch effect on channel change (if enabled)
+    if (glitchEnabled) {
+      setIsGlitching(true);
+      const timer = setTimeout(() => setIsGlitching(false), 400);
+      return () => clearTimeout(timer);
+    }
   }, [radioState.station?.id]);
 
   // Check alarm
@@ -140,6 +145,8 @@ function App() {
         toggleSticky={() => setShowSticky(prev => !prev)} 
         toggleTimer={() => setShowTimerUI(prev => !prev)}
         toggleTodo={() => setShowTodo(prev => !prev)}
+        glitchEnabled={glitchEnabled}
+        toggleGlitch={() => setGlitchEnabled(prev => !prev)}
       />
       
       {/* Ambient Mixer Container */}

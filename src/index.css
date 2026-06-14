@@ -87,6 +87,26 @@
   --theme-haze: #7BA5B5;
 }
 
+.theme-neon {
+  /* Blade Runner neo-noir */
+  --theme-ink: #04060F;
+  --theme-dusk: #0A0E1F;
+  --theme-lamp: #00FFEA;
+  --theme-ember: #FF2D78;
+  --theme-phosphor: #BF5FFF;
+  --theme-haze: #3A6D8C;
+}
+
+.theme-crimson {
+  /* Dark rainy jazz lofi */
+  --theme-ink: #0D0810;
+  --theme-dusk: #1A1020;
+  --theme-lamp: #FF7070;
+  --theme-ember: #FF4444;
+  --theme-phosphor: #FF9E9E;
+  --theme-haze: #6B4F5A;
+}
+
 .crt-overlay {
   pointer-events: none;
   z-index: 50;

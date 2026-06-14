@@ -148,7 +148,10 @@ export function useRadio() {
 
   return {
     station,
+    currentStationIndex,
+    setCurrentStationIndex,
     isPlaying,
+    setIsPlaying,
     volume,
     setVolume,
     togglePlay,
