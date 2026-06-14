@@ -3,7 +3,7 @@ import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, X } fr
 import { STATIONS } from '../data/stations';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function Player({ station, currentStationIndex, setCurrentStationIndex, isPlaying, volume, setVolume, togglePlay, nextStation, prevStation, getAudioData }) {
+export default function Player({ station, currentStationIndex, setCurrentStationIndex, isPlaying, isBuffering, volume, setVolume, togglePlay, nextStation, prevStation, getAudioData, nowPlaying }) {
   const [isListOpen, setIsListOpen] = useState(false);
   const canvasRef = useRef(null);
   const peaksRef = useRef([]);
@@ -103,12 +103,20 @@ export default function Player({ station, currentStationIndex, setCurrentStation
             {/* Station Info */}
             <div className="flex flex-col gap-1 w-full items-center">
               <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isPlaying ? 'bg-phosphor shadow-[0_0_8px_var(--color-phosphor)]' : 'bg-ember'}`} />
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors ${isBuffering ? 'bg-lamp animate-pulse' : isPlaying ? 'bg-phosphor shadow-[0_0_8px_var(--color-phosphor)]' : 'bg-ember'}`} />
                 <div className="text-center">
                   <h2 className="font-serif italic text-xl text-lamp">{station.name}</h2>
                   <p className="font-mono text-xs text-haze">{station.vibe}</p>
                 </div>
               </div>
+              {isBuffering && (
+                <p className="font-mono text-[10px] text-lamp/60 animate-pulse mt-1">tuning...</p>
+              )}
+              {!isBuffering && nowPlaying && (
+                <p className="font-mono text-[10px] text-haze/50 mt-1 max-w-[280px] truncate text-center" title={`${nowPlaying.artist} — ${nowPlaying.title}`}>
+                  ♪ {nowPlaying.artist} — {nowPlaying.title}
+                </p>
+              )}
             </div>
 
             {/* Transport Controls */}

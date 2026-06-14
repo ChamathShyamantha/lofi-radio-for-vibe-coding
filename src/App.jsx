@@ -9,6 +9,7 @@ import StickyNotes from './components/StickyNotes';
 import TodoList from './components/TodoList';
 import Journal from './components/Journal';
 import VibePet from './components/VibePet';
+import ShortcutOverlay from './components/ShortcutOverlay';
 import { useRadio } from './hooks/useRadio';
 import { useCommands } from './hooks/useCommands';
 import { useToneAmbient } from './hooks/useToneAmbient';
@@ -18,6 +19,7 @@ import { useTimer } from './hooks/useTimer';
 import { useTheme } from './hooks/useTheme';
 import { useWeatherSync } from './hooks/useWeatherSync';
 import { useMidi } from './hooks/useMidi';
+import { useNowPlaying } from './hooks/useNowPlaying';
 import { motion, AnimatePresence } from 'motion/react';
 import * as Y from 'yjs';
 import { WebrtcProvider } from 'y-webrtc';
@@ -40,6 +42,8 @@ function App() {
   const [showTodo, setShowTodo] = useState(() => localStorage.getItem('drift_todo_ui') === 'true');
   const [isGlitching, setIsGlitching] = useState(false);
   const [glitchEnabled, setGlitchEnabled] = useState(() => localStorage.getItem('drift_glitch') !== 'false');
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const nowPlaying = useNowPlaying(radioState.station);
 
   useWeatherSync(ambientState, themeState);
   useMidi();
@@ -80,7 +84,7 @@ function App() {
   const [showSticky, setShowSticky] = useState(() => localStorage.getItem('drift_sticky') === 'true');
   const [showTimerUI, setShowTimerUI] = useState(() => localStorage.getItem('drift_timer_ui') === 'true');
 
-  const commandState = useCommands({
+  const { parseCommand } = useCommands({
     radioState,
     ambientState,
     timerState,
@@ -94,8 +98,22 @@ function App() {
   useEffect(() => { localStorage.setItem('drift_timer_ui', showTimerUI); }, [showTimerUI]);
   useEffect(() => { localStorage.setItem('drift_todo_ui', showTodo); }, [showTodo]);
   
-  const { parseCommand } = useCommands({ radioState, ambientState, timerState, themeState, setShowSticky, setShowTimerUI });
   useShortcuts({ radioState });
+
+  // Shortcut overlay toggle
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (document.activeElement.tagName === 'INPUT') return;
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        e.preventDefault();
+        setShowShortcuts(prev => !prev);
+      } else if (e.key === 'Escape' && showShortcuts) {
+        setShowShortcuts(false);
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [showShortcuts]);
 
   const [cursors, setCursors] = useState([]);
   useEffect(() => {
@@ -189,7 +207,7 @@ function App() {
       {/* Player Container */}
       <div className="absolute inset-x-0 bottom-10 md:bottom-8 z-20 pointer-events-none flex justify-center">
         <motion.div drag={!isMobile} dragMomentum={false} className="pointer-events-auto cursor-grab active:cursor-grabbing">
-          <Player {...radioState} />
+          <Player {...radioState} nowPlaying={nowPlaying} />
         </motion.div>
       </div>
 
@@ -205,6 +223,10 @@ function App() {
           ☕ buy me a coffee
         </a>
       </div>
+
+      <AnimatePresence>
+        {showShortcuts && <ShortcutOverlay onClose={() => setShowShortcuts(false)} key="shortcuts" />}
+      </AnimatePresence>
 
       <VibePet />
     </div>

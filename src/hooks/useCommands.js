@@ -26,12 +26,12 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
         return 'Usage: station <name>';
       case 'theme':
         if (setTheme) {
-          const validThemes = ['lamplight', 'vaporwave', 'matrix', 'dawn', 'void', 'ocean'];
+          const validThemes = ['lamplight', 'vaporwave', 'matrix', 'dawn', 'void', 'ocean', 'neon', 'crimson'];
           if (validThemes.includes(args[1])) {
             setTheme(args[1]);
             return `Theme switched to ${args[1]}`;
           }
-          return `Usage: theme <lamplight|vaporwave|matrix|dawn|void|ocean>`;
+          return `Usage: theme <${validThemes.join('|')}>`;
         }
         return 'Theme system not ready';
       case 'sticky':

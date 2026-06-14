@@ -37,6 +37,7 @@ function playStaticNoise(durationMs = 300) {
 
 export function useRadio() {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isBuffering, setIsBuffering] = useState(false);
   const [currentStationIndex, setCurrentStationIndex] = useState(() => {
     return parseInt(localStorage.getItem('drift_station') || '0', 10);
   });
@@ -80,9 +81,11 @@ export function useRadio() {
       src: [station.url],
       html5: true,
       volume: oldHowl && isPlaying ? 0 : volume,
-      onplay: () => setIsPlaying(true),
+      onplay: () => { setIsPlaying(true); setIsBuffering(false); },
       onpause: () => setIsPlaying(false),
       onstop: () => setIsPlaying(false),
+      onload: () => setIsBuffering(false),
+      onloaderror: () => setIsBuffering(false),
       onplayerror: () => {
         newHowl.once('unlock', () => {
           newHowl.play();
@@ -93,6 +96,7 @@ export function useRadio() {
     howlRef.current = newHowl;
 
     if (isPlaying) {
+      setIsBuffering(true);
       newHowl.play();
       if (oldHowl) {
         newHowl.fade(0, volume, 800);
@@ -152,6 +156,7 @@ export function useRadio() {
     setCurrentStationIndex,
     isPlaying,
     setIsPlaying,
+    isBuffering,
     volume,
     setVolume,
     togglePlay,

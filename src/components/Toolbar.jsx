@@ -34,8 +34,11 @@ export default function Toolbar({ radioState, themeState, toggleSticky, toggleTi
 
   return (
     <div className="fixed top-4 left-4 md:top-8 md:left-8 z-30 flex flex-col gap-2 md:gap-4 pointer-events-auto overflow-y-auto max-h-[calc(100vh-32px)] no-scrollbar">
-      <button onClick={cycleTheme} className="p-2 md:p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative flex-shrink-0" title="Cycle Theme">
+      <button onClick={cycleTheme} className="p-2 md:p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative flex-shrink-0" title={`Cycle Theme (${theme})`}>
         <Palette size={iconSize} />
+        <span className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-ink/90 border border-haze/20 rounded font-mono text-[10px] text-lamp opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none hidden md:block z-50">
+          Theme: {theme}
+        </span>
       </button>
       <button onClick={toggleTimer} className="p-2 md:p-3 bg-dusk/50 backdrop-blur-md border border-haze/10 rounded-xl hover:bg-haze/20 text-haze hover:text-lamp transition-colors group relative flex-shrink-0" title="Pomodoro Timer">
         <Timer size={iconSize} />
