@@ -153,3 +153,22 @@ body {
   height: 100%;
   width: 100%;
 }
+
+/* Pixel cat running leg animations */
+@keyframes leg-front {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes leg-back {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(0px); }
+}
+
+.animate-leg-front {
+  animation: leg-front 0.15s ease-in-out infinite;
+}
+
+.animate-leg-back {
+  animation: leg-back 0.15s ease-in-out infinite;
+}
