@@ -5,6 +5,15 @@ export function useNowPlaying(station) {
   const intervalRef = useRef(null);
 
   useEffect(() => {
+    // YouTube stations don't have SomaFM metadata
+    if (station?.youtubeId) {
+      setNowPlaying({
+        title: station.vibe || 'YouTube Stream',
+        artist: station.name || 'Unknown',
+      });
+      return;
+    }
+
     if (!station?.somaId) {
       setNowPlaying(null);
       return;
