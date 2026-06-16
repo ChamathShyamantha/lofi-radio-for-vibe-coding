@@ -106,6 +106,13 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
           return 'Feeding the vibe pet...';
         }
         return 'Usage: feed pet';
+      case 'cat':
+      case 'summon':
+        if (window.driftFM?.summonCat) {
+          window.driftFM.summonCat();
+          return 'Here kitty kitty... 🐱';
+        }
+        return 'The cat is sleeping...';
       case 'alarm':
         if (args[1]) {
           localStorage.setItem('drift_alarm', args[1]);
@@ -113,7 +120,7 @@ export function useCommands({ radioState, ambientState, timerState, themeState, 
         }
         return 'Usage: alarm HH:MM';
       case 'help':
-        return 'Commands: play, pause, next, prev, station <name>, theme <name>, volume <0-100>, rain, fire, timer <min>, sticky, journal, focus, relax, coffee, status';
+        return 'Commands: play, pause, next, prev, station <name>, theme <name>, volume <0-100>, rain, fire, timer <min>, sticky, journal, cat, focus, relax, coffee, status';
       case 'focus':
         if (setTheme) setTheme('matrix');
         if (setLoopVolume) setLoopVolume('synth', 30);

@@ -92,7 +92,7 @@ export default function VibePet() {
   const quoteTimeoutRef = useRef(null);
   const hideTimeoutRef = useRef(null);
 
-  // Expose feedPet globally
+  // Expose pet controls globally
   useEffect(() => {
     window.driftFM = window.driftFM || {};
     window.driftFM.feedPet = () => {
@@ -100,6 +100,12 @@ export default function VibePet() {
       setIsVisible(true);
       if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
       hideTimeoutRef.current = setTimeout(() => setIsVisible(false), 4000);
+    };
+    window.driftFM.summonCat = () => {
+      const dir = Math.random() > 0.5 ? 'left-to-right' : 'right-to-left';
+      setDashDirection(dir);
+      setIsDashing(true);
+      setTimeout(() => setIsDashing(false), 3500);
     };
   }, []);
 
