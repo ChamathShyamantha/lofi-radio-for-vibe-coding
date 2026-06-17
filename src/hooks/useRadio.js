@@ -270,6 +270,59 @@ export function useRadio() {
     }
   }, [volume, isYouTube]);
 
+  // ─── Media Session & Title Sync (For PreMiD & OS Media Controls) ───────
+  useEffect(() => {
+    // Update document title for PreMiD scraping and UX
+    const status = isPlaying ? '🎵' : '⏸️';
+    document.title = `${status} ${station.name} | VibeCode FM`;
+
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: station.name,
+        artist: 'VibeCode FM',
+        album: station.vibe,
+        artwork: [
+          { src: '/vite.svg', sizes: '192x192', type: 'image/svg+xml' } // generic icon fallback
+        ]
+      });
+
+      // We define these as functions that call the latest togglePlay/etc
+      // Since they are registered once, we use a wrapper or update them when needed
+      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    }
+  }, [station, isPlaying]);
+
+  // We set action handlers separately so they always have access to the latest state/functions
+  useEffect(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.setActionHandler('play', () => {
+        // We can't directly call togglePlay if it's stale, but togglePlay is re-created every render
+        // Actually, best to just trigger the play state
+        if (isYouTube && ytPlayerRef.current) {
+          ytPlayerRef.current.playVideo();
+        } else if (howlRef.current) {
+          howlRef.current.play();
+        }
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        if (isYouTube && ytPlayerRef.current) {
+          ytPlayerRef.current.pauseVideo();
+        } else if (howlRef.current) {
+          howlRef.current.pause();
+        }
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        setCurrentStationIndex((prev) => (prev - 1 + STATIONS.length) % STATIONS.length);
+        wasPlayingRef.current = true;
+      });
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        setCurrentStationIndex((prev) => (prev + 1) % STATIONS.length);
+        wasPlayingRef.current = true;
+      });
+    }
+  }, [isYouTube]); // Re-bind if youtube/audio mode changes
+
+
   // ─── Controls ──────────────────────────────────────────────────────────
   const togglePlay = () => {
     if (isYouTube) {

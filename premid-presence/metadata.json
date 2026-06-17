@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/PreMiD/schemas/main/metadata.json",
+  "author": {
+    "id": "123456789012345678",
+    "name": "VibeCode FM"
+  },
+  "contributors": [],
+  "service": "VibeCode FM",
+  "description": "Discord Rich Presence for VibeCode FM - A Lofi Radio Web App",
+  "url": "localhost",
+  "version": "1.0.0",
+  "logo": "https://raw.githubusercontent.com/PreMiD/Presences/main/websites/A/Apple%20Music/icon.png",
+  "thumbnail": "https://raw.githubusercontent.com/PreMiD/Presences/main/websites/A/Apple%20Music/icon.png",
+  "color": "#4B0082",
+  "tags": ["music", "lofi", "radio", "vibecode"],
+  "category": "music",
+  "iframe": false,
+  "regExp": "(localhost:5173|127\\.0\\.0\\.1:5173)",
+  "readLogs": false
+}
