@@ -5,7 +5,7 @@ import Terminal from './components/Terminal';
 import AmbientMixer from './components/AmbientMixer';
 import Toolbar from './components/Toolbar';
 import PomodoroUI from './components/PomodoroUI';
-import StickyNotes from './components/StickyNotes';
+import StickyNotes, { PinnedNotesLayer } from './components/StickyNotes';
 import TodoList from './components/TodoList';
 import Journal from './components/Journal';
 import VibePet from './components/VibePet';
@@ -19,6 +19,7 @@ import { useTimer } from './hooks/useTimer';
 import { useTheme } from './hooks/useTheme';
 import { useWeatherSync } from './hooks/useWeatherSync';
 import { useSleepTimer } from './hooks/useSleepTimer';
+import { useStickyNotes } from './hooks/useStickyNotes';
 import { useMidi } from './hooks/useMidi';
 import { useNowPlaying } from './hooks/useNowPlaying';
 import { motion, AnimatePresence } from 'motion/react';
@@ -38,6 +39,7 @@ function App() {
   const themeState = useTheme();
   const sleepTimerState = useSleepTimer(radioState);
   const isMobile = useIsMobile();
+  const notesState = useStickyNotes();
   
   const [showNotes, setShowNotes] = useState(false);
   const [showJournal, setShowJournal] = useState(false);
@@ -162,6 +164,9 @@ function App() {
       <AtmosphereLayer rainVolume={ambientState.volumes.rain || 0} theme={themeState.theme} showScenes={showScenes} />
       <PhysicsCanvas getAudioData={radioState.getAudioData} isPlaying={radioState.isPlaying} />
 
+      {/* Pinned sticky notes — always visible */}
+      <PinnedNotesLayer notesState={notesState} />
+
       <Toolbar 
         radioState={radioState} 
         themeState={themeState} 
@@ -192,7 +197,7 @@ function App() {
       {/* Popout Windows */}
       <AnimatePresence>
         {showTimerUI && <PomodoroUI timerState={timerState} onClose={() => setShowTimerUI(false)} key="timer" />}
-        {showSticky && <StickyNotes onClose={() => setShowSticky(false)} key="sticky" />}
+        {showSticky && <StickyNotes onClose={() => setShowSticky(false)} notesState={notesState} key="sticky" />}
         {showTodo && <TodoList onClose={() => setShowTodo(false)} key="todo" />}
       </AnimatePresence>
       
