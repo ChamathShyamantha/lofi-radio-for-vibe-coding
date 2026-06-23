@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as Tone from 'tone';
+import { Howl } from 'howler';
+
+// ── Audio file-based loops (Howler) ──
+// Place your audio files in public/audio/
+// Recommended: CC0-licensed loops from opengameart.org, freesound.org, etc.
+const AUDIO_LOOPS = {
+  rain: '/audio/rain.mp3',
+  fire: '/audio/fire.mp3',
+};
 
 export function useToneAmbient() {
   const [volumes, setVolumes] = useState(() => {
@@ -7,7 +16,8 @@ export function useToneAmbient() {
     return saved ? JSON.parse(saved) : { rain: 0, crackle: 0, fire: 0, synth: 0 };
   });
 
-  const synthsRef = useRef({});
+  const synthsRef = useRef({});   // Tone.js synths (crackle, synth)
+  const howlsRef = useRef({});    // Howler instances (rain, fire)
   const isStarted = useRef(false);
   const isInitializing = useRef(false);
 
@@ -15,73 +25,37 @@ export function useToneAmbient() {
     localStorage.setItem('drift_ambient_v3', JSON.stringify(volumes));
   }, [volumes]);
 
+  // ── Initialize Howler-based audio loops ──
+  const initHowl = (id) => {
+    if (howlsRef.current[id]) return;
+    const src = AUDIO_LOOPS[id];
+    if (!src) return;
+
+    howlsRef.current[id] = new Howl({
+      src: [src],
+      loop: true,
+      volume: 0,
+      preload: true,
+      onloaderror: (_, msg) => console.warn(`[ambient] Failed to load ${id}: ${msg}`),
+    });
+  };
+
+  // ── Initialize Tone.js synths (crackle + generative chords) ──
   const initSynths = async () => {
-    // Prevent double initialization
-    if (synthsRef.current.rain || isInitializing.current) return;
+    if (synthsRef.current.crackle || isInitializing.current) return;
     isInitializing.current = true;
 
     try {
-      // ── Rain: Gentle light rain ──
-      // White noise → bandpass (airy pitter-patter) → slow tremolo for natural variation
-      const rainGain = new Tone.Gain(1).toDestination();
-      const rainLowpass = new Tone.Filter(3500, "lowpass").connect(rainGain);
-      const rainHighpass = new Tone.Filter(1200, "highpass").connect(rainLowpass);
-      const rainTremolo = new Tone.Tremolo({ frequency: 0.3, depth: 0.25, spread: 180 }).connect(rainHighpass).start();
-      const rainNoise = new Tone.Noise("white").connect(rainTremolo);
-      rainNoise.volume.value = -Infinity;
-      rainNoise.start();
-      // Wrap with gain node for unified volume control; apply -8dB offset for gentle level
-      synthsRef.current.rain = {
-        volume: rainNoise.volume,
-        _offset: -8,
-        dispose: () => { rainNoise.dispose(); rainTremolo.dispose(); rainHighpass.dispose(); rainLowpass.dispose(); rainGain.dispose(); }
-      };
-
-      // ── Crackle: Vinyl crackle ──
+      // ── Crackle: Vinyl crackle (synthesized — works great) ──
       const crackleFilter = new Tone.Filter(4000, "highpass").toDestination();
       const crackleNoise = new Tone.Noise("brown").connect(crackleFilter);
       crackleNoise.volume.value = -Infinity;
       crackleNoise.start();
       synthsRef.current.crackle = crackleNoise;
 
-      // ── Fire: Realistic crackling fireplace (two layers) ──
-      const fireGain = new Tone.Gain(1).toDestination();
-
-      // Layer 1: Warm hearth rumble — brown noise, lowpass, slow irregular tremolo
-      const fireRumbleFilter = new Tone.Filter(300, "lowpass").connect(fireGain);
-      const fireRumbleTremolo = new Tone.Tremolo({ frequency: 0.8, depth: 0.4 }).connect(fireRumbleFilter).start();
-      const fireRumble = new Tone.Noise("brown").connect(fireRumbleTremolo);
-      fireRumble.volume.value = -Infinity;
-      fireRumble.start();
-
-      // Layer 2: Crackle pops — white noise, tight bandpass ~3kHz, fast irregular tremolo
-      const fireCrackleHigh = new Tone.Filter(5000, "lowpass").connect(fireGain);
-      const fireCrackleLow = new Tone.Filter(2000, "highpass").connect(fireCrackleHigh);
-      const fireCrackleTremolo = new Tone.Tremolo({ frequency: 6, depth: 0.95 }).connect(fireCrackleLow).start();
-      const fireCrackle = new Tone.Noise("white").connect(fireCrackleTremolo);
-      fireCrackle.volume.value = -Infinity;
-      fireCrackle.start();
-
-      // Expose unified volume control for fire
-      synthsRef.current.fire = {
-        volume: { 
-          value: -Infinity,
-          rampTo: (db, time) => {
-            // Rumble is main layer, crackle pops are -6dB quieter
-            fireRumble.volume.rampTo(db, time);
-            fireCrackle.volume.rampTo(db === -Infinity ? -Infinity : db - 6, time);
-          }
-        },
-        dispose: () => {
-          fireRumble.dispose(); fireRumbleTremolo.dispose(); fireRumbleFilter.dispose();
-          fireCrackle.dispose(); fireCrackleTremolo.dispose(); fireCrackleLow.dispose(); fireCrackleHigh.dispose();
-          fireGain.dispose();
-        }
-      };
-
-      // Generative Synth: PolySynth with reverb
+      // ── Generative Synth: PolySynth with reverb ──
       const reverb = new Tone.Reverb({ decay: 8, wet: 1 }).toDestination();
-      await reverb.generate(); // Must await reverb IR generation
+      await reverb.generate();
       const delay = new Tone.FeedbackDelay("8n", 0.4).connect(reverb);
       const synth = new Tone.PolySynth(Tone.FMSynth, {
         harmonicity: 0.5,
@@ -101,7 +75,6 @@ export function useToneAmbient() {
       let step = 0;
 
       const loop = new Tone.Loop(time => {
-        // Only play if volume is audible to save CPU
         if (synth.volume.value > -60) {
           const chord = chords[step % chords.length];
           synth.triggerAttackRelease(chord, "1m", time);
@@ -113,26 +86,19 @@ export function useToneAmbient() {
       Tone.getTransport().start();
       loop.start(0);
 
-      // Wrap synth to expose a consistent volume interface
       synthsRef.current.synth = {
         volume: synth.volume,
-        // No start/stop needed — the loop handles triggering
         dispose: () => {
-          loop.stop();
-          loop.dispose();
-          synth.dispose();
-          delay.dispose();
-          reverb.dispose();
+          loop.stop(); loop.dispose();
+          synth.dispose(); delay.dispose(); reverb.dispose();
         }
       };
 
-      // Apply any saved volumes from localStorage
-      Object.keys(volumes).forEach(id => {
+      // Apply saved volumes for Tone.js synths
+      ['crackle', 'synth'].forEach(id => {
         if (volumes[id] > 0 && synthsRef.current[id]) {
-          const node = synthsRef.current[id];
-          const offset = node._offset || 0;
-          const db = Tone.gainToDb(volumes[id]) + offset;
-          node.volume.value = db;
+          const db = Tone.gainToDb(volumes[id]);
+          synthsRef.current[id].volume.value = db;
         }
       });
     } catch (err) {
@@ -143,10 +109,31 @@ export function useToneAmbient() {
   };
 
   const setLoopVolume = useCallback(async (id, val, initAudio = true) => {
-    // Normalize: if val > 1, treat it as a percentage (0-100 → 0-1)
+    // Normalize: if val > 1, treat as percentage (0-100 → 0-1)
     const normalizedVal = val > 1 ? val / 100 : val;
     const clampedVal = Math.max(0, Math.min(1, normalizedVal));
 
+    // ── Howler-based sounds (rain, fire) ──
+    if (AUDIO_LOOPS[id]) {
+      if (initAudio) {
+        initHowl(id);
+      }
+
+      setVolumes(prev => ({ ...prev, [id]: clampedVal }));
+
+      const howl = howlsRef.current[id];
+      if (howl) {
+        howl.volume(clampedVal);
+        if (clampedVal > 0 && !howl.playing()) {
+          howl.play();
+        } else if (clampedVal === 0 && howl.playing()) {
+          howl.pause();
+        }
+      }
+      return;
+    }
+
+    // ── Tone.js-based sounds (crackle, synth) ──
     if (initAudio && !isStarted.current) {
       await Tone.start();
       isStarted.current = true;
@@ -157,8 +144,7 @@ export function useToneAmbient() {
 
     if (isStarted.current && synthsRef.current[id]) {
       const node = synthsRef.current[id];
-      const offset = node._offset || 0;
-      const db = clampedVal === 0 ? -Infinity : Tone.gainToDb(clampedVal) + offset;
+      const db = clampedVal === 0 ? -Infinity : Tone.gainToDb(clampedVal);
       node.volume.rampTo(db, 0.5);
     }
   }, []);
@@ -166,17 +152,23 @@ export function useToneAmbient() {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      // Dispose Tone.js nodes
       Object.values(synthsRef.current).forEach(node => {
         try {
           if (node && typeof node.dispose === 'function') {
             node.stop?.();
             node.dispose();
           }
-        } catch (e) {
-          // Ignore disposal errors
-        }
+        } catch (e) { /* ignore */ }
       });
       synthsRef.current = {};
+
+      // Unload Howler instances
+      Object.values(howlsRef.current).forEach(howl => {
+        try { howl.unload(); } catch (e) { /* ignore */ }
+      });
+      howlsRef.current = {};
+
       isStarted.current = false;
     };
   }, []);
