@@ -1,6 +1,6 @@
 export const STATIONS = [
   { id: "drift",  name: "drift.fm",   url: "https://ice1.somafm.com/groovesalad-128-mp3",  vibe: "downtempo lofi grooves",          defaultTheme: "lamplight",  somaId: "groovesalad" },
-  { id: "rainy",  name: "rainy.fm",   url: "https://ice1.somafm.com/suburbs-128-mp3",      vibe: "indie lofi + late nights",         defaultTheme: "dawn",       somaId: "suburbs" },
+  { id: "rainy",  name: "rainy.fm",   url: "https://ice1.somafm.com/fluid-128-mp3",        vibe: "lofi study · slow beats",          defaultTheme: "dawn",       somaId: "fluid" },
   { id: "synth",  name: "night.fm",   url: "https://ice1.somafm.com/spacestation-128-mp3", vibe: "synthwave / chillsynth",           defaultTheme: "vaporwave",  somaId: "spacestation" },
   { id: "plaza",  name: "plaza.fm",   url: "https://radio.plaza.one/mp3",                  vibe: "pure vaporwave aesthetics",        defaultTheme: "vaporwave",  somaId: null },
   { id: "drone",  name: "deep.fm",    url: "https://ice1.somafm.com/dronezone-128-mp3",    vibe: "deep ambient space",               defaultTheme: "void",       somaId: "dronezone" },
