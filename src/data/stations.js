@@ -8,5 +8,6 @@ export const STATIONS = [
   { id: "blade",  name: "blade.fm",   url: "https://ice1.somafm.com/darkzone-128-mp3",     vibe: "blade runner · neo-noir",         defaultTheme: "neon",       somaId: "darkzone" },
   { id: "neon",   name: "neon.fm",    url: "https://ice1.somafm.com/defcon-128-mp3",        vibe: "neon rain · cyberpunk lofi",      defaultTheme: "neon",       somaId: "defcon" },
   { id: "replicant", name: "replicant.fm", url: "https://ice1.somafm.com/deepspaceone-128-mp3", vibe: "2049 · off-world ambience", defaultTheme: "neon",       somaId: "deepspaceone" },
-  { id: "minecraft", name: "minecraft.fm", url: null, youtubeId: "25YSweUeLy0", vibe: "minecraft lofi · cozy blocks", defaultTheme: "dawn", somaId: null }
+  { id: "minecraft", name: "minecraft.fm", url: null, youtubeId: "25YSweUeLy0", vibe: "minecraft lofi · cozy blocks", defaultTheme: "dawn", somaId: null },
+  { id: "claude",    name: "claude.fm",    url: null, youtubeId: "tRsQsTMvPNg", vibe: "lofi · 24/7 live chill beats",  defaultTheme: "lamplight", somaId: null }
 ];
