@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export default function Player({ station, currentStationIndex, setCurrentStationIndex, isPlaying, isBuffering, volume, setVolume, togglePlay, nextStation, prevStation, getAudioData, nowPlaying }) {
   const [isListOpen, setIsListOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const canvasRef = useRef(null);
   const peaksRef = useRef([]);
   const activeItemRef = useRef(null);
@@ -46,12 +47,26 @@ export default function Player({ station, currentStationIndex, setCurrentStation
         if (peaksRef.current.length !== numBars) {
           peaksRef.current = new Array(numBars).fill(0);
         }
+
+        // Fetch real audio data if available (Icecast), otherwise null (YouTube)
+        const audioData = getAudioData ? getAudioData() : null;
+
         for (let i = 0; i < numBars; i++) {
-          const noise = Math.random() * 0.5 + 0.5;
-          const wave = Math.sin(time * 2 + i * 0.1) * 0.5 + 0.5;
-          const beat = Math.pow(Math.sin(time * 3.14 * (80 / 60)), 4); // 80 bpm
-          const simulatedValue = (wave * 0.3 + noise * 0.4 + beat * 0.3) * 255;
-          const barHeight = (simulatedValue / 255) * (height * 0.8);
+          let value = 0;
+
+          if (audioData && audioData.length > 0) {
+            // Map the bar index to the frequency data array (use lower half of frequencies)
+            const dataIndex = Math.floor((i / numBars) * (audioData.length * 0.6));
+            value = audioData[dataIndex];
+          } else {
+            // Simulated fallback for YouTube
+            const noise = Math.random() * 0.5 + 0.5;
+            const wave = Math.sin(time * 2 + i * 0.1) * 0.5 + 0.5;
+            const beat = Math.pow(Math.sin(time * 3.14 * (80 / 60)), 4); // 80 bpm
+            value = (wave * 0.3 + noise * 0.4 + beat * 0.3) * 255;
+          }
+
+          const barHeight = (value / 255) * (height * 0.8);
           
           ctx.fillStyle = 'var(--color-phosphor)';
           ctx.globalAlpha = 0.5;
@@ -187,7 +202,7 @@ export default function Player({ station, currentStationIndex, setCurrentStation
             transition={{ duration: 0.2 }}
             className="relative z-10 flex flex-col w-full h-[220px] p-4 bg-dusk/80 backdrop-blur-md"
           >
-            <div className="flex justify-between items-center mb-3">
+            <div className="flex justify-between items-center mb-2">
               <div className="text-[10px] font-mono text-haze/60 uppercase tracking-widest pl-1">Select Channel</div>
               <button 
                 onClick={(e) => { e.stopPropagation(); setIsListOpen(false); }}
@@ -198,12 +213,25 @@ export default function Player({ station, currentStationIndex, setCurrentStation
               </button>
             </div>
             
+            <div className="px-1 mb-2">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full bg-haze/10 border border-haze/20 rounded-md px-2 py-1 text-[11px] font-mono text-lamp placeholder-haze/40 focus:outline-none focus:border-lamp/50"
+              />
+            </div>
+            
             <div 
               className="flex flex-col gap-2 overflow-y-auto pr-1 h-full scroll-smooth"
               style={{ scrollbarWidth: 'thin', scrollbarColor: 'var(--color-haze) transparent' }}
               onPointerDown={(e) => e.stopPropagation()} // allows scrolling without dragging the player
             >
-              {STATIONS.map((s, i) => {
+              {STATIONS.filter(s => s.name.toLowerCase().includes(searchQuery.toLowerCase()) || s.vibe.toLowerCase().includes(searchQuery.toLowerCase())).map((s) => {
+                const i = STATIONS.findIndex(st => st.id === s.id);
                 const isActive = i === currentStationIndex;
                 return (
                   <button
